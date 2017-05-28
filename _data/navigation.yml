@@ -2,7 +2,7 @@
 main:
   - title: "Electronics"
     url: /electronics/index
-  - title: "Speaker Deck"
+  - title: "Talks"
     url: https://speakerdeck.com/yageek
   - title: "iSpoiler"
     url: http://blog.yageek.net/iSpoiler/

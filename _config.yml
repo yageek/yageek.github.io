@@ -247,7 +247,7 @@ defaults:
       comments: # true
       share: true
       related: true
-  # _posts
+  # _electronics
   - scope:
       path: "_electronics"
       type: electronics
@@ -258,3 +258,14 @@ defaults:
       comments: # true
       share: true
       related: true
+      # _electronics
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: false
+      share: false
+      related: false

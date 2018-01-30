@@ -23,8 +23,100 @@ Pay attention to the version of Android Studio, Android SDK tools and Gradle you
 Here I am using **Android Studio v0.4.2**, **Android SDK tools 19.0.1** and **Gradle 1.9**.
 I notice some problems by using the Gradle version provided with Android Studio. I rather download Gradle somewhere on my hard drive disk and configure Android Studio to use it (Android Studio -> Preferences).
 
+{% highlight groovy%}
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.7.+'
+    }
+}
+apply plugin: 'android'
 
-{% gist 6079345 %}
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    apt
+}
+
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'org.androidannotations:androidannotations-api:3.0'
+    apt 'org.androidannotations:androidannotations:3.0'
+
+}
+
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.0.1"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 19
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+        }
+    }
+    productFlavors {
+        defaultFlavor {
+            proguardFile 'proguard-rules.txt'
+        }
+    }
+    signingConfigs {
+        myConfig {
+            storeFile file(project.property("MyProject.signing"))
+            storePassword "xxxxxxxxx"
+            keyAlias "yageek company"
+            keyPassword "xxxxxxxxxx"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.myConfig
+        }
+    }
+}
+
+
+def getSourceSetName(variant) {
+    return new File(variant.dirName).getName();
+}
+
+android.applicationVariants.all { variant ->
+    def aptOutputDir = project.file("build/source/apt")
+    def aptOutput = new File(aptOutputDir, variant.dirName)
+    println "****************************"
+    println "variant: ${variant.name}"
+    println "manifest:  ${variant.processResources.manifestFile}"
+    println "aptOutput:  ${aptOutput}"
+    println "****************************"
+
+    android.sourceSets[getSourceSetName(variant)].java.srcDirs+= aptOutput.getPath()
+
+    variant.javaCompile.options.compilerArgs += [
+            '-processorpath', configurations.apt.getAsPath(),
+            '-AandroidManifestFile=' + variant.processResources.manifestFile,
+            '-s', aptOutput
+    ]
+
+    variant.javaCompile.source = variant.javaCompile.source.filter { p ->
+        return !p.getPath().startsWith(aptOutputDir.getPath())
+    }
+
+    variant.javaCompile.doFirst {
+        aptOutput.mkdirs()
+    }
+}
+{% endhighlight %}
 
 Let's try some explanations.
 {% highlight groovy%}

@@ -3,7 +3,7 @@
 title: A taste of CoreData - Part 0
 date: '2017-11-23 10:00:00 +0100'
 comments: true
-published: false
+published: true
 tags: 
     - ios
     - coredata
@@ -269,7 +269,7 @@ The context has now: 1 objects inserted.
 
 Great, we succeeded to create a graph instance and insert a node into it!
 
-# Reduce the boilerplate code
+# Reduce the boilerplate code with `NSManagedObjectModel`
 
 Our graph rules are basic and you would have noticed that we required a big number of lines
 to describes it. Using code is one way to describes the rules. Inside the documentation of the `NSEntityDescription`,
@@ -279,9 +279,10 @@ _You usually define entities in a Managed object model using the data modeling t
 {: .notice }
 
 If you have heard about CoreData before, the *Managed Object Model* is the first tool you have been presented
-to without any further information.
+to without any further information. This tool will help to create a bunch of `NSEntityDescription` with the GUI.
 
 {% include figure image_path="/assets/images/core_data/00/managed_model_tool.png" alt="The Managed Object Model tool in Xcode" caption="The Managed Object Model tool in Xcode." %}
+
 
 [^1]: [Mastering Core Data - WWDC 2010 - Session 128](http://asciiwwdc.com/2010/sessions/118)
 [^2]: [Core Data: Data Storage and Management for iOS, OS X, and iCloud 2nd Edition - Marcus Zarra](https://www.amazon.com/Core-Data-Storage-Management-iCloud/dp/1937785084)

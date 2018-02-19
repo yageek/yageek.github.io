@@ -1,7 +1,7 @@
 ---
 
 title: A taste of CoreData - Part 0 - A graph framework
-date: '2017-11-23 10:00:00 +0100'
+date: '2018-02-19 10:00:00 +0100'
 comments: true
 published: true
 tags: 

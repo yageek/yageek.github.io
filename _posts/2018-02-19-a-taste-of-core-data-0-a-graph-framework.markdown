@@ -14,13 +14,12 @@ tags:
 Before 2011, I was mainly working on C++/Qt for Gnu/Linux operating systems. I really enjoyed the documentation set and the clear tutorials the development team provided along with the SDK. I guess that still today, you can find a lot of answers by simply reading the documentation or some of the provided code samples.
 
 When I dived into the Apple world, I was glad to see that plenty of good resources was also provided for the main frameworks. You usually takes the same path when you are using a library for the first time: reading the programmming guide, reading the the main classes documentation and may be watching
-some WWDC introducton videos. Most of the times, this is enough to remove the magic and understand the how the mechanics work.
+some WWDC introducton videos. Most of the times, this is enough to remove the magic and understand how the mechanics work.
 
-I would say that this is not true for CoreData. It is the lonely framework I heard people avoid to use
-because they see it as too complex and badly documented.
+I would say that this is not true for CoreData. It is the only framework I heard people avoid to use because they see it as too complex and badly documented.
 
-Badly documented may be too harsh. I would say that the information about CoreData is widespread in a lot of differents places. I would even say, that some information are "hidden" only inside some WWDC videos about CoreData, especially regarding the concurrency and the potential stack configurations [^1].
-Hopefully, different books have been published (I would recommend [^2] and [^3]) that help you to find the missing pieces of this big puzzle.
+Badly documented may be too harsh. I would say that the information about CoreData is widespread in a lot of differents places. I would even say, that some information are "hidden" only inside some WWDC videos, especially regarding the concurrency and the potential stack configurations [^1].
+Hopefully, different books have been published (I would recommend [^2] and [^3]) that help to find the missing pieces of this big puzzle.
 
 I would like to start a series of post presenting CoreData using a different approach, starting more from the code documentation and trying to provide some explanations about how the framework seems to work under the hood.
 
@@ -28,7 +27,7 @@ All the code related to the series will be pusblished on this github repository:
 
 # What is CoreData?
 
-Describing CoreData is not so easy. A lot of developers I met simply describes Core Data as an **Object Relational Mapper (ORM)** library around SQLite. You could agree with this it does not correctly describes CoreData.
+Describing CoreData is not so easy. A lot of developers I met simply describes Core Data as an **Object Relational Mapper (ORM)** library around SQLite. You could agree with this, but it does not describes CoreData completely/correctly.
 
 According to me, the best description has been provided by [Matt Thompson](https://twitter.com/@mattt) inside his [post](http://nshipster.com/core-data-libraries-and-utilities/) on [NSHipster.com](https://nshispter.com):
 
@@ -46,6 +45,15 @@ It differs from the notion of an **ORM** in the sense that you manipulate a grap
 -   ORM/SQLITE: involves mostly writing SQL statements that returns Record (Pure Value elements) from a sets of  tables.
 -   Graph: involves looking for object instances (node) from a specific graph instance.
 
+# Why using CoreData?
+
+The next question is why would you use CoreData? There are plenty of reason to use CoreData:
+
+- To create the _Model_ part of your MVVM/MVC architecture.
+- To persist this model in the disk if needed.
+- Simplify the feeding of UI elements.
+- Advanced usages can be used to help synchronization with backend services.
+
 # CoreData as a graph framework
 
 One graph is composed of nodes and edges. 
@@ -56,7 +64,7 @@ CoreData has three classes representing those notions:
 
 - Graph: `NSManagedObjectContext`
 - Node: `NSManagedObject`
-- Edge: `NSRelationShipDescription`
+- Edge: `NSRelationshipDescription`
 
 {% include figure image_path="/assets/images/core_data/00/graph_2.png" alt="CoreData expresses the same concepts using classes instances" caption="CoreData expresses the same concepts using classes instances" %}
 
@@ -77,7 +85,7 @@ this call, a new instance of one graph is created.
 
 Creating a node is equivalent to create one instance of the `NSManagedObject` class. If we take a look at the [documentation](https://developer.apple.com/documentation/coredata/nsmanagedobject?language=objc), we discover that this class has two designated initalizers, [`initWithContext:`](https://developer.apple.com/documentation/coredata/nsmanagedobject/1640602-initwithcontext?language=objc) and [`initWithEntity:insertIntoManagedObjectContext:`](https://developer.apple.com/documentation/coredata/nsmanagedobject/1506357-initwithentity?language=objc).
 
-As we have no idea about what an `NSEntityDescription` is, let's try to use the `initWithContext:` that requires  simply a reference to a `NSManagedObjectContext` instance (aka. the graph instance).
+As we have no idea about what an `NSEntityDescription` is, let's try to use the `initWithContext:` that requires simply a reference to a `NSManagedObjectContext` instance (aka. the graph instance).
 
 Let's try the following code:
 
@@ -88,17 +96,17 @@ let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
 let node = NSManagedObject(context: context)
 ```
 
-And test is inside a playground:
+And test it inside a playground:
 
 {% include figure image_path="/assets/images/core_data/00/crash_code_node.png" alt="Using the initWithContext: initializer crashes" caption="Ouch! That's rude." %}
 
 Creating the node like this does not seems to be the right way. If we would have read the complete
-documentation of the method, this crash wouldn't be a surprise:
+documentation of this method, this crash wouldn't be a surprise:
 
 _This method is only legal to call on subclasses of NSManagedObject that represent a single entity in the model._
 {: .notice }
 
-As for now we have no idea about why would we have subclasses of nodes, we have no other choice than trying the other option.
+As we have no idea about why would we have subclasses of nodes for now, we have no other choice than trying the other option.
 
 The `initWithEntity:insertIntoManagedObjectContext:` method requires one instance of the `NSEntityDescription` class along with one instance of the `NSManagedObjectContext` class. 
 What is the purpose of `NSEntityDescription`?
@@ -107,7 +115,7 @@ What is the purpose of `NSEntityDescription`?
 
 You should ask yourself why CoreData would need another piece of information than the graph instance to create our node?
 
-Generally, the graph you're creating using CoreData is an abstraction that matches a real concept of your own. In this concept, you may have differents type of nodes and some specific rules about how the nodes can be combined. Each node would also hold some data.
+Generally, the graph you're creating using CoreData is an abstraction that matches a real concept of your own. In this concept, you may have differents type of nodes and some specific rules about how the nodes can be connected. Each node would also hold some data.
 
 CoreData is expecting this piece of information in the form of one instance of the `NSEntityDescription` class. 
 Creating a graph without a basic set of rules would not make sense.
@@ -136,7 +144,7 @@ All those rules can be splitted into two categories:
 CoreData has exactly two classes that represent this concept: `NSAttributeDescription` and `NSRelationshipDescription` (both inherit from `NSPropertyDescription`). In fact, `NSEntityDescription` is just a container around a set of `NSPropertyDescription` subclasses.
 To create the rules, we would just need to create the appropriate instances of `NSAttributeDescription` and `NSRelationshipDescription` describing our business logic.
 
-Let's start with the different containers for our `Employee` and `Boss` nodes. Each container is identified by her `name` property:
+Let's start with the different containers for our `Employee` and `Boss` nodes. Each container is identified by its `name` property:
 
 ```swift
 // Boss Description
@@ -208,8 +216,8 @@ employeeMulRel.destinationEntity = employeeDescription
 
 Each relationship object is identified by its `name` property. You configure the relationship with the following options:
 - `destinationEntity`: The name of the `NSEntityDescription` targeted by this relationship.
-- `minCount`: The minimum value of nodes targeted by this relation ship.
-- `maxCount`: The maximum value of nodes targeted by this relation ship. Using `0` means an infinited number.
+- `minCount`: The minimum value of nodes targeted by this relationship.
+- `maxCount`: The maximum value of nodes targeted by this relationship. Using `0` means no limit.
 - `deleteRule`: When the node hosting this relationship is deleted, this property tells to CoreData what to do with the targeted node(s) (delete them also, simply cut the edges, etc). 
 
 Now we can assign each properties to the corresponding `NSEntityDescription`:
@@ -247,12 +255,12 @@ The output gives us:
 The context has now: 1 objects inserted.
 ```
 
-Great, we succeeded to create a graph instance and and one node!
+Great, we succeeded to create a graph instance and one node!
 
 # Reducing the boilerplate code with `NSManagedObjectModel`
 
 Our current graph rules are basic and you would have noticed that we required a lot of lines
-to describesit. Using code is not the only way to describe the rules. Inside the documentation of the `NSEntityDescription`, you will find this sentence:
+to describes them. Using code is not the only way to describe our business logic. Inside the documentation of the `NSEntityDescription`, you will find this sentence:
 
 _You usually define entities in a Managed object model using the data modeling tool in Xcode_
 {: .notice }
@@ -266,7 +274,7 @@ If this file is present in your application's bundle, you will be able to access
 
 A `NSManagedObjectModel` instance is basically a bag that contains all the `NSEntityDescription`, `NSAttributeDescription` and `NSRelationshipDescription` we defined in the editor.
 
-Assuming you have recreated the previous rules using a `.xcdatamodel`, you can load it using the `NSManagedObjectModel` class:
+Assuming you have recreated the previous rules using a `.xcdatamodel`, you can load them using the `NSManagedObjectModel` class:
 
 ```swift
 let fileURL = Bundle.main.url(forResource: "SimpleGraph", withExtension: "momd")!
@@ -286,20 +294,20 @@ print("The context has now: \(context.insertedObjects.count) objects inserted.")
 ```
 And the output is exactly the same as before.
 
-# Working the node
+# Working on the node
 
-Creatingempty nodes is not really usefull. We should be able to modify the nodes to modify the data they contains and create connection between them. For now we have simply a graph of basic `NSManagedObject` instances.
+Creating empty nodes is not really usefull. We should be able the data they contain and create connections between them. For now we have a graph of basic `NSManagedObject` instances.
 
 {% include figure image_path="/assets/images/core_data/00/empty_object_graph.png" alt="An empty graph of `NSManagedObject` instances" caption="What we have created for now" %}
 
-How do we access to the node's properties we defined? By taking a look to the `NSManagedObject` documentation, a paragraph gives us some information:
+How do we access to the node's properties we have defined? By taking a look to the `NSManagedObject` documentation, a paragraph gives us some information:
 
 _**Core Data automatically generates accessor methods (and primitive accessor methods) for you**. For attributes and to-one relationships, Core Data generates the standard get and set accessor methods; for to-many relationships, **Core Data generates the indexed accessor methods as described in Achieving Basic Key-Value Coding Compliance in Key-Value Coding Programming Guide**. You do however need to declare the accessor methods or use Objective-C properties to suppress compiler warnings. For a full discussion, see Managed Object Accessor Methods in Core Data Programming Guide._
 {: .notice }
 
 What does this means is that CoreData makes your node automatically [KVC/KVO compliant](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/KeyValueCoding/Compliant.html#//apple_ref/doc/uid/20002172-BAJEAIEE) according to the relationships and attributes you defined in the model.
 
-In addition to this, you have two methods defined in `NSManagedObjectContext` that provide you a read and write access to the `NSManagedObjectModel` private storage that do not triggers KVO notifications. 
+In addition to this, you have two methods defined in `NSManagedObjectContext` that provide you a read and write access to the `NSManagedObjectModel` private storage that do not trigger KVO notifications. 
 
 ```objc
 /* Direct access to NSManagedObject private internal storage */
@@ -366,7 +374,7 @@ for element in set {
 } //
 ```
 
-This outputs:
+We can check that the connection is effective:
 
 ```
 Boss has : 1 employee(s)
@@ -374,13 +382,12 @@ Entity of element: Optional("Employee")
 ```
 # Adding business semantics and rereduce boilerplate
 
-Once again you would have to tell me that this looks like boilerplate. Using the KVC primitives is error prone and not really developer friendly. The documentation of `NSManagedObject` [has a suggestion](https://developer.apple.com/documentation/coredata/nsmanagedobject): 
+You should tell me that this looks like boilerplate code again. Using the KVC primitives is error prone and not really developer friendly. The [documentation](https://developer.apple.com/documentation/coredata/nsmanagedobject) of `NSManagedObject` has a suggestion: 
 
 _You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete Object graph can be formed with NSManagedObject instances._
 {: .notice}
 
-Creating `NSManagedObject` subclasses will benefit from the whole power of the KVC getters and setters generation.
-For the `Boss` node, we can create a subclass:
+Creating `NSManagedObject` subclasses will benefit from the whole power of KVC. For the `Boss` node, we can create a subclass:
 
 ```swift
 public class Boss: NSManagedObject {
@@ -392,7 +399,7 @@ public class Boss: NSManagedObject {
 }
 ```
 
-`@NSManaged` is a swift statement that corresponds to the Objective-C `@dynamic` declaration. The Objective-C equivalent of the previous code would be:
+`@NSManaged` is a swift statement that corresponds to the Objective-C `@dynamic` statement. The Objective-C equivalent of the previous code is:
 
 ```objc
 @interface Boss: NSManagedObject
@@ -412,7 +419,7 @@ public class Boss: NSManagedObject {
 @end
 ```
 
-If you remember, using `@dynamic` promises that, if an objective-c property (ge) does not exist at compile-time,an implementation will be provided at runtime (Here, they are provided by CoreData).
+If you remember, using `@dynamic` promises that, if an objective-c property (getter/setter) does not exist at compile-time, an implementation will be provided at runtime (Here, they are provided by CoreData).
 
 So we can refactor the previous code using subclasses. Let first declare the `Boss` and `Employee` classes:
 
@@ -434,7 +441,7 @@ public class Employee: NSManagedObject {
 ```
 
 **Note:** Regarding in which module namespace you are working, you may need to override manually the name of the class in Objective-C.
-Here, we are working in the global namespace from a playground (no prefix). We have to specify it manually using one `@objc` statement.
+Here we are working in the global namespace of a playground (no prefix). We have to specify it manually using one `@objc` statement.
 
 Modifying the contents of the nodes is now a piece of cake:
 
@@ -467,7 +474,7 @@ The generation of KVC properties and the usage of `@dynamic/@NSManaged` looks li
 CoreData is one Objective-C framework and rely highly on the dynamicity of the language. Let's try to have a basic idea on how is CoreData working under the hood.
 
 If you have ever played with the Objective-C runtime, you would know that you can perform a lot at 
-runtime, like  adding an instance variable to existing compiled class [^4].
+runtime, like adding an instance variable to existing compiled classes [^4].
 
 Let's create a basic `NSObject` subclass and declares a variables as `@NSManaged/@dynamic`:
 
@@ -484,7 +491,7 @@ let i = MyClass()
 print("Value: \(i.value)") // Crash!!!
 ```
 
-The idea is to add instance variable to the class and both getter and setter to the class at runtime.
+The idea is to add an instance variable to the class and both getter and setter to the class at runtime.
 We will use the `objc_getAssociatedObject`, `objc_setAssociatedObject` and `class_addMethod` of the Objective-C runtime.
 
 Let's start with the instance variable:
@@ -545,13 +552,12 @@ i.value = "Changed value" as NSString
 // Read
 print("Value: \(i.value)") // Value: Optional(Changed value)
 ```
-It does not crash anymore and the behaviour is the one expected. Of course CoreData is using a much more sophisticated strategy to compute and provide all the required properties at runtime. This is done during the
-object's initialization. The documentation of `initWithEntity:insertIntoManagedObjectContext:` specifies:
+It does not crash anymore and the behaviour is the one expected. Of course CoreData is using a much more sophisticated strategy to compute and provide all the required properties at runtime. This is done during the object's initialization. The documentation of `initWithEntity:insertIntoManagedObjectContext:` specifies:
 
 _NSManagedObject uses dynamic class generation to support the Objective-C 2 properties feature (see Declared Properties) by automatically creating a subclass of the class appropriate for entity. initWithEntity:insertIntoManagedObjectContext: therefore returns an instance of the appropriate class for entity. The dynamically-generated subclass will be based on the class specified by the entity, so specifying a custom class in your model will supersede the class passed to alloc._
 {: .notice }
 
-We know the basic about how to model and creates our graph and our nodes. In a next post, we'll take a look about the other face of CoreData and see how we can persist our graph on the disk.
+We know the basic about how to model and create our graph and our nodes. In a next post, we'll take a look about the other face of CoreData and see how we can persist our graph on the disk.
 
 [^1]: [Mastering Core Data - WWDC 2010 - Session 128](http://asciiwwdc.com/2010/sessions/118)
 [^2]: [Core Data: Data Storage and Management for iOS, OS X, and iCloud 2nd Edition - Marcus Zarra](https://www.amazon.com/Core-Data-Storage-Management-iCloud/dp/1937785084)

@@ -141,7 +141,7 @@ All those rules can be splitted into two categories:
 - Attribute: The data attached to the node. (`name` and `property` here)
 - Relationship: The rules describing how the nodes can be linked. (`boss`, `bosses`, `employees` and `underbosses`)
 
-CoreData has exactly two classes that represent this concept: `NSAttributeDescription` and `NSRelationshipDescription` (both inherit from `NSPropertyDescription`). In fact, `NSEntityDescription` is just a container around a set of `NSPropertyDescription` subclasses.
+CoreData has exactly two classes that represent those concepts: `NSAttributeDescription` and `NSRelationshipDescription` (both inherit from `NSPropertyDescription`). In fact, `NSEntityDescription` is just a container around a set of `NSPropertyDescription` subclasses.
 To create the rules, we would just need to create the appropriate instances of `NSAttributeDescription` and `NSRelationshipDescription` describing our business logic.
 
 Let's start with the different containers for our `Employee` and `Boss` nodes. Each container is identified by its `name` property:
@@ -296,7 +296,7 @@ And the output is exactly the same as before.
 
 # Working on the node
 
-Creating empty nodes is not really usefull. We should be able the data they contain and create connections between them. For now we have a graph of basic `NSManagedObject` instances.
+Creating empty nodes is not really usefull. We should be able to modify the data they contain and create connections between them. For now we have a graph of basic `NSManagedObject` instances.
 
 {% include figure image_path="/assets/images/core_data/00/empty_object_graph.png" alt="An empty graph of `NSManagedObject` instances" caption="What we have created for now" %}
 

@@ -1,20 +1,12 @@
----
-
-title: Migrating smoothly to modern swift asynchronous APIs
-date: "2022-05-21"
-comments: true
-published: true
-tags: 
-    - ios
-    - macOS
-    - async
-    - Combine
-    - Operation
-    - OperationQueue
-    - NSOperation
-    - NSOperationQueue
-    - swift
----
++++
+title="Migrating smoothly to modern swift asynchronous APIs"
+date="2022-05-21"
+comments = true
+published = false
+[taxonomies]
+tags = ["ios", "macOS", "concurrency", "nsoperation"]
+categories = ["programming", "apple"]
++++
 
 As old as I remember, I always managed concurrency on iOS/macOS before the arrival of swift with `NSOperationQueue` and
 `NSOperation` subclasses. The API is not simple to understand and it's threrading behaviors changed over time but once

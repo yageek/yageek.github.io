@@ -1,15 +1,12 @@
----
-
-title: "Scrollable custom view inside a UIWebView"
-date: "2015-02-18"
-comments: true
-published: true
-tags: 
-    - ios 
-    - uiwebview
-    - scrollview
----
-
++++
+title="Scrollable custom view inside a UIWebView"
+date="2015-02-18"
+comments = true
+published = false
+[taxonomies]
+tags = ["ios", "uikit", "scrollview", "pinning", "objective-c"]
+categories = ["UI", "apple"]
++++
 Displaying HTML content is very easy on iOS. Just grab a `UIWebView` and call `loadHTMLString:baseURL` or  `loadData:MIMEType:textEncodingName:baseURL:` and enjoy the results.
 This component would fit your needs 90% of the time. But in some cases, having a simple `UIWebView` is not enough.
 

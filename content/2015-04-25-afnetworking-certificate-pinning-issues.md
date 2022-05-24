@@ -1,15 +1,12 @@
----
-
-title: "Certificate Pinning issues with AFNetworking"
-date: "2015-04-25"
-comments: true
-published: true
-tags: 
-    - pinning
-    - ios
-    - afnetworking
-    - osx
----
++++
+title="Certificate Pinning issues with AFNetworking"
+date="2015-04-25"
+comments = true
+published = false
+[taxonomies]
+tags = ["ios", "certificates", "http", "pinning"]
+categories = ["security", "apple"]
++++
 
 The others day at work, we were confronted to a serious bug on the iOS app of a customer.
  Due to some security issues, we used https and a certificate key pinning method to avoid man in the middle attack.

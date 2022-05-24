@@ -1,12 +1,11 @@
----
-
-title: "iOS Provisioning demystified"
-date: "2015-02-18"
-comments: true
-published: false
-draft: true
-categories:
----
++++
+title="iOS Provisioning demystified"
+date="2015-02-18"
+draft = true
+[taxonomies]
+tags = ["ios", "provisioning", "french"]
+categories = ["development", "apple"]
++++
 
 # Digital identity
 The evolution of technology gave birth to the creation of the concept of **digital identity** or **virtual identity**. As the **identity** in reality, it certificates that some informations about a **physical person** are real.

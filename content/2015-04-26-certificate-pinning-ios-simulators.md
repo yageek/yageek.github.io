@@ -1,18 +1,16 @@
----
-
-title: "Certificate pinning on iOS simulators with iostrust"
-date: "2015-04-27"
-comments: true
-published: true
-tags: 
-    - ios
-    - certificates
-    - iostrust
----
++++
+title="Certificate pinning on iOS simulators with iostrust"
+date="2015-04-27"
+comments = true
+published = false
+[taxonomies]
+tags = ["ios", "certificates", "http", "pinning"]
+categories = ["security", "apple"]
++++
 
 **03.02.2016 Update**: *iostrust* seems to be broken for Xcode 7. I'm currently trying a new approach to fix this issue.
 
-The other day, I published a [post](@/blog/2015-04-25-afnetworking-certificate-pinning-issues.md) on some issues we had regarding certificate pinning and the TLS cache. While the [calabash](https://github.com/calabash) tests were executed, a new issue appears.
+The other day, I published a [post](@/2015-04-25-afnetworking-certificate-pinning-issues.md) on some issues we had regarding certificate pinning and the TLS cache. While the [calabash](https://github.com/calabash) tests were executed, a new issue appears.
 
 We have several backends to speak with. Each uses a SSL certificate, not necessarily a certificate signed by a root CA trusted by iOS.
 

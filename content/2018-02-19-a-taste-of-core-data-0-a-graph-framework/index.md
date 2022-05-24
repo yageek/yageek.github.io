@@ -1,15 +1,12 @@
----
-
-title: A taste of CoreData - Part 0 - A graph framework
-date: "2018-02-19"
-comments: true
-published: true
-tags: 
-    - ios
-    - coredata
-    - modeling
-    - graph
----
++++
+title="A taste of CoreData - Part 0 - A graph framework"
+date="2018-02-19"
+comments = true
+published = false
+[taxonomies]
+tags = ["ios", "coredata", "modeling", "graph"]
+categories = ["programming", "apple"]
++++
 
 Before 2011, I was mainly working on C++/Qt for Gnu/Linux operating systems. I really enjoyed the documentation set and the clear tutorials the development team provided along with the SDK. I guess that still today, you can find a lot of answers by simply reading the documentation or some of the provided code samples.
 

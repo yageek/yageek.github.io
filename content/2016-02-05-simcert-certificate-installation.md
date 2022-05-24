@@ -1,16 +1,12 @@
----
-
-title: How to automate the installation of HTTP certificates on XCode 7
-date: "2016-02-05"
-comments: true
-published: true
-tags: 
-    - ios
-    - certificates
-    - iostrust 
-    - simcert
-    - swift
----
++++
+title="How to automate the installation of HTTP certificates on XCode 7"
+date="2016-02-05"
+comments = true
+published = false
+[taxonomies]
+tags = ["ios", "certificates", "http", "pinning"]
+categories = ["security", "apple"]
++++
 
 Few months ago, I wrote a Ruby gem named [iostrust](https://github.com/yageek/iostrust) to automate the installation of trusted certificate on the different iOS simulators.
 

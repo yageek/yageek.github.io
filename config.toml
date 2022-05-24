@@ -12,8 +12,8 @@ build_search_index = false
 
 theme = "zerm"
 taxonomies = [
-    {name = "ios"},
-    {name = "development"},
+    {name = "categories"},
+    {name = "tags"},
 
 ]
 [markdown]
@@ -51,10 +51,10 @@ theme_color = "green"
 
 # How many menu items to show on desktop. if you set this to 0, only submenu
 # button will be visible.
-show_menu_items = 10
+show_menu_items = 3
 
 # set theme to full screen width.
-full_width = false
+full_width = true
 
 # center theme with default width.
 center = false
@@ -79,7 +79,7 @@ logo_home_link = "/"
 # Menu items to display. You define a url and the name of the menu item.
 # NOTE: `$BASE_URL/` must be included in the url name.
 main_menu = [              
-              {url="/blog/", name="blog"},
+              {url="/about/", name="about"},
               {url="/projects", name="projects"},            
               {url="https://speakerdeck.com/yageek", name="talks", external=true},
               {url="https://github.com/yageek", name="github", external=true},

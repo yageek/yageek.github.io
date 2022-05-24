@@ -1,8 +1,7 @@
 +++
 title="Migrating smoothly to modern swift asynchronous APIs"
 date="2022-05-21"
-comments = true
-published = false
+draft = true
 [taxonomies]
 tags = ["ios", "macOS", "concurrency", "nsoperation"]
 categories = ["programming", "apple"]

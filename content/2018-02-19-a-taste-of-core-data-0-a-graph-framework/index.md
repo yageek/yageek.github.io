@@ -95,7 +95,7 @@ let node = NSManagedObject(context: context)
 
 And test it inside a playground:
 
-![Using the initWithContext: initializer crashes](crash_code_node.png.png)
+![Using the initWithContext: initializer crashes](crash_code_node.png)
 
 Creating the node like this does not seems to be the right way. If we would have read the complete
 documentation of this method, this crash wouldn't be a surprise:

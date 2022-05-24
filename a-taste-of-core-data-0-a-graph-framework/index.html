@@ -1,0 +1,271 @@
+<!doctype html><html lang=en><head><title>A taste of CoreData - Part 0 - A graph framework - yageek</title><meta content="text/html; charset=utf-8"http-equiv=content-type><meta content="width=device-width,initial-scale=1.0,maximum-scale=1"name=viewport><meta content="The personal website of Yannick Heinrich A taste of CoreData - Part 0 - A graph framework "name=description><meta content="programming, apple, ios, coredata, modeling, graph"name=keywords><meta content="Yannick Heinrich - A taste of CoreData - Part 0 - A graph framework"property=og:title><meta content=website property=og:type><meta content=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/ property=og:url><meta content="The personal website of Yannick Heinrich"property=og:description><link as=font crossorigin=anonymous href=https://yageek.net/assets/fonts/FiraCode-Regular.woff2 rel=preload type=font/woff2><link as=font crossorigin=anonymous href=https://yageek.net/assets/fonts/FiraCode-Bold.woff2 rel=preload type=font/woff2><link href="https://yageek.net/style.css?h=2c8d17b7aa9535c98dc3b725d1bc9c6b2e12b81df07df95e5d9af6dcb88e7c78"rel=stylesheet><link href="https://yageek.net/color/green.css?h=5a347e8c6d0c143f1dc7bfd18df37abdfa7c3c45951262b9f8b4bcc829a2ab94"rel=stylesheet><body><div class="container full"><header class=header><div class=header__inner><div class=header__logo><a href=/> <div class=logo>yageek</div> </a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href="
+    
+        https://yageek.net/about
+    
+">about</a><li><a href="
+    
+        https://yageek.net/projects
+    
+">projects</a><li><a href="
+    
+        https://speakerdeck.com/yageek
+    
+">talks</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>show more ▾</li><ul class="menu__sub-inner-more hidden"><li><a href="
+    
+        https://github.com/yageek
+    
+">github</a><li><a href="
+    
+        https://www.linkedin.com/in/yageek/
+    
+">linkedin</a><li><a href="
+    
+        https://twitter.com/yageek
+    
+">twitter</a></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href="
+    
+        https://yageek.net/about
+    
+">about</a><li><a href="
+    
+        https://yageek.net/projects
+    
+">projects</a><li><a href="
+    
+        https://speakerdeck.com/yageek
+    
+">talks</a><li><a href="
+    
+        https://github.com/yageek
+    
+">github</a><li><a href="
+    
+        https://www.linkedin.com/in/yageek/
+    
+">linkedin</a><li><a href="
+    
+        https://twitter.com/yageek
+    
+">twitter</a></ul></nav></header><div class=content><article class=post><header><h1 class=post-title><a href=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/>A taste of CoreData - Part 0 - A graph framework</a></h1><div class=post-meta><span class=post-date>2018.02.19 </span><span class=post-author></span> :: {<a href=https://yageek.net/categories/programming/>programming</a>, <a href=https://yageek.net/categories/apple/>apple</a>} :: #<a href=https://yageek.net/tags/ios/>ios</a> #<a href=https://yageek.net/tags/coredata/>coredata</a> #<a href=https://yageek.net/tags/modeling/>modeling</a> #<a href=https://yageek.net/tags/graph/>graph</a></div></header><p>Before 2011, I was mainly working on C++/Qt for Gnu/Linux operating systems. I really enjoyed the documentation set and the clear tutorials the development team provided along with the SDK. I guess that still today, you can find a lot of answers by simply reading the documentation or some of the provided code samples.<p>When I dived into the Apple world, I was glad to see that plenty of good resources was also provided for the main frameworks. You usually takes the same path when you are using a library for the first time: reading the programmming guide, reading the the main classes documentation and may be watching some WWDC introducton videos. Most of the times, this is enough to remove the magic and understand how the mechanics work.<p>I would say that this is not true for CoreData. It is the only framework I heard people avoid to use because they see it as too complex and badly documented.<p>Badly documented may be too harsh. I would say that the information about CoreData is widespread in a lot of differents places. I would even say, that some information are "hidden" only inside some WWDC videos, especially regarding the concurrency and the potential stack configurations <sup class=footnote-reference><a href=#1>1</a></sup>. Hopefully, different books have been published (I would recommend <sup class=footnote-reference><a href=#2>2</a></sup> and <sup class=footnote-reference><a href=#3>3</a></sup>) that help to find the missing pieces of this big puzzle.<p>I would like to start a series of post presenting CoreData using a different approach, starting more from the code documentation and trying to provide some explanations about how the framework seems to work under the hood.<p>All the code related to the series will be pusblished on this github repository: <a href=https://github.com/yageek/a-taste-of-core-data>https://github.com/yageek/a-taste-of-core-data</a>.<h1 id=what-is-coredata>What is CoreData?</h1><p>Describing CoreData is not so easy. A lot of developers I met simply describes Core Data as an <strong>Object Relational Mapper (ORM)</strong> library around SQLite. You could agree with this, but it does not describes CoreData completely/correctly.<p>According to me, the best description has been provided by <a href=https://twitter.com/@mattt>Matt Thompson</a> inside his <a href=http://nshipster.com/core-data-libraries-and-utilities/>post</a> on <a href=https://nshispter.com>NSHipster.com</a>:<p><em>Contrary to popular belief, <strong>Core Data is not an Object-Relational Mapper</strong>, but <strong>rather an object graph and persistence framework</strong>, capable of much more than the Active Record pattern alone is capable of. <strong>Using Core Data as an ORM</strong> necessarily limits the capabilities of Core Data and muddies its conceptual purity. But for many developers longing for the familiarity of an ORM, this trade-off is a deal at twice the price!</em> - Matt Thomson {: .notice }<p>The key elements here are <strong>object graph</strong> and <strong>persistence</strong>.<p>You use CoreData to create graphes of objects and you would eventually persist thoses graphes on the disk.<p>It differs from the notion of an <strong>ORM</strong> in the sense that you manipulate a graph of connected nodes instead of manipulating a set of records stored in a set of tables.<p><img alt="A graph is different from a collection of tables"src=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/graph_vs_table.png><ul><li>ORM/SQLITE: involves mostly writing SQL statements that returns Record (Pure Value elements) from a sets of tables.<li>Graph: involves looking for object instances (node) from a specific graph instance.</ul><h1 id=why-using-coredata>Why using CoreData?</h1><p>The next question is why would you use CoreData? There are plenty of reason to use CoreData:<ul><li>To create the <em>Model</em> part of your MVVM/MVC architecture.<li>To persist this model in the disk if needed.<li>Simplify the feeding of UI elements.<li>Advanced usages can be used to help synchronization with backend services.</ul><h1 id=coredata-as-a-graph-framework>CoreData as a graph framework</h1><p>One graph is composed of nodes and edges.<p><img alt="A graph is composed of nodes and egdes"src=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/graph_1.png><p>CoreData has three classes representing those notions:<ul><li>Graph: <code>NSManagedObjectContext</code><li>Node: <code>NSManagedObject</code><li>Edge: <code>NSRelationshipDescription</code></ul><p><img alt="CoreData expresses the same concepts using classes instances"src=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/graph_2.png><h2 id=how-do-we-create-a-graph>How do we create a graph?</h2><h3 id=graph>Graph</h3><p>Creating a graph is equivalent to create an instance of the <code>NSManagedObjectContext</code> class. This class has only <a href=https://developer.apple.com/documentation/coredata/nsmanagedobjectcontext/1506709-init>one designated initializer</a> <code>initWithConcurrencyType:</code>.<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>let</span><span> context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+</span></code></pre><p>Don't pay attention to the provided constant for now, we'll detail it in a future post. Just remind that after this call, a new instance of one graph is created.<h2 id=node>Node</h2><p>Creating a node is equivalent to create one instance of the <code>NSManagedObject</code> class. If we take a look at the <a href="https://developer.apple.com/documentation/coredata/nsmanagedobject?language=objc">documentation</a>, we discover that this class has two designated initalizers, <a href="https://developer.apple.com/documentation/coredata/nsmanagedobject/1640602-initwithcontext?language=objc"><code>initWithContext:</code></a> and <a href="https://developer.apple.com/documentation/coredata/nsmanagedobject/1506357-initwithentity?language=objc"><code>initWithEntity:insertIntoManagedObjectContext:</code></a>.<p>As we have no idea about what an <code>NSEntityDescription</code> is, let's try to use the <code>initWithContext:</code> that requires simply a reference to a <code>NSManagedObjectContext</code> instance (aka. the graph instance).<p>Let's try the following code:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Graph
+</span><span style=color:#b48ead;>let</span><span> context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+</span><span style=color:#65737e;>// Node
+</span><span style=color:#b48ead;>let</span><span> node = NSManagedObject(context: context)
+</span></code></pre><p>And test it inside a playground:<p><img alt="Using the initWithContext: initializer crashes"src=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/crash_code_node.png><p>Creating the node like this does not seems to be the right way. If we would have read the complete documentation of this method, this crash wouldn't be a surprise:<p><em>This method is only legal to call on subclasses of NSManagedObject that represent a single entity in the model.</em> {: .notice }<p>As we have no idea about why would we have subclasses of nodes for now, we have no other choice than trying the other option.<p>The <code>initWithEntity:insertIntoManagedObjectContext:</code> method requires one instance of the <code>NSEntityDescription</code> class along with one instance of the <code>NSManagedObjectContext</code> class. What is the purpose of <code>NSEntityDescription</code>?<h2 id=modeling-the-nodes-and-the-graph>Modeling the nodes and the graph</h2><p>You should ask yourself why CoreData would need another piece of information than the graph instance to create our node?<p>Generally, the graph you're creating using CoreData is an abstraction that matches a real concept of your own. In this concept, you may have differents type of nodes and some specific rules about how the nodes can be connected. Each node would also hold some data.<p>CoreData is expecting this piece of information in the form of one instance of the <code>NSEntityDescription</code> class. Creating a graph without a basic set of rules would not make sense.<p>Let's imagine a simple set of rules for the rest of this post. We want to create a graph representing the organization graph of a company. We have two types of node:<ul><li><strong>Boss</strong>: A named person that (generally) rarely code and manages one or more people. This person has also at most one boss on top of her.<li><strong>Employee</strong>: A named person that (generally) manages no one due to high productivity and has a speciality. This person can have multiple bosses.</ul><p>From those sentences we can create a basic set of rules:<ul><li>We have two types of nodes: <code>Boss</code> and <code>Employee</code>.<li>A <code>Boss</code> node has a <code>name</code> property.<li>An <code>Employee</code> node has one <code>name</code> property and one <code>speciality</code> property.<li>A <code>Boss</code> node has a link to several <code>Employee</code> nodes. Let's call this link <code>employees</code>.<li>A <code>Boss</code> node has a link to a specific <code>Boss</code> node (it's own boss). Let's call this link <code>boss</code>.<li>A <code>Boss</code> node has a link to the bosses under him. Let's call this link <code>underbosses</code>.<li>An <code>Employee</code> node a link to all his own bosses. Let's call this link <code>bosses</code>.</ul><p><img alt="Description of the rules of the example graph"src=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/graph_rules_description.png> All those rules can be splitted into two categories:<ul><li>Attribute: The data attached to the node. (<code>name</code> and <code>property</code> here)<li>Relationship: The rules describing how the nodes can be linked. (<code>boss</code>, <code>bosses</code>, <code>employees</code> and <code>underbosses</code>)</ul><p>CoreData has exactly two classes that represent those concepts: <code>NSAttributeDescription</code> and <code>NSRelationshipDescription</code> (both inherit from <code>NSPropertyDescription</code>). In fact, <code>NSEntityDescription</code> is just a container around a set of <code>NSPropertyDescription</code> subclasses. To create the rules, we would just need to create the appropriate instances of <code>NSAttributeDescription</code> and <code>NSRelationshipDescription</code> describing our business logic.<p>Let's start with the different containers for our <code>Employee</code> and <code>Boss</code> nodes. Each container is identified by its <code>name</code> property:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Boss Description
+</span><span style=color:#b48ead;>let</span><span> bossDescription = NSEntityDescription()
+</span><span>bossDescription.name = </span><span style=color:#a3be8c;>"Boss"
+</span><span>
+</span><span style=color:#65737e;>// Employee Description
+</span><span style=color:#b48ead;>let</span><span> employeeDescription = NSEntityDescription()
+</span><span>employeeDescription.name = </span><span style=color:#a3be8c;>"Employee"
+</span></code></pre><p>Then we continue with the different existing attributes:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Attributes
+</span><span style=color:#b48ead;>let</span><span> nameBossAttr = NSAttributeDescription()
+</span><span>nameBossAttr.name = </span><span style=color:#a3be8c;>"name"
+</span><span>nameBossAttr.attributeType = .stringAttributeType
+</span><span>nameBossAttr.defaultValue = </span><span style=color:#a3be8c;>"No Name For Boss"
+</span><span>
+</span><span style=color:#b48ead;>let</span><span> nameEmployeeAttr = NSAttributeDescription()
+</span><span>nameEmployeeAttr.name = </span><span style=color:#a3be8c;>"name"
+</span><span>nameEmployeeAttr.attributeType = .stringAttributeType
+</span><span>
+</span><span style=color:#b48ead;>let</span><span> specialityAttr = NSAttributeDescription()
+</span><span>specialityAttr.name = </span><span style=color:#a3be8c;>"speciality"
+</span><span>specialityAttr.attributeType = .stringAttributeType
+</span></code></pre><p>You should notice that:<ul><li>Each attribute is identified by its <code>name</code> property.<li>Each attribute has a type (<code>attributeType</code>). You can check the <a href=https://developer.apple.com/documentation/coredata/nsattributetype><code>NSAttributeType</code></a> enum for all the available types.<li>You can provide a default value if needed.</ul><p>Now we can describe the relationships:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Relationships
+</span><span style=color:#b48ead;>let</span><span> bossOneRel = NSRelationshipDescription()
+</span><span>bossOneRel.name = </span><span style=color:#a3be8c;>"boss"
+</span><span>bossOneRel.minCount = </span><span style=color:#d08770;>0
+</span><span>bossOneRel.maxCount = </span><span style=color:#d08770;>1 </span><span style=color:#65737e;>// To-One
+</span><span>bossOneRel.destinationEntity = bossDescription
+</span><span>
+</span><span style=color:#b48ead;>let</span><span> underBossesRel = NSRelationshipDescription()
+</span><span>underBossesRel.name = </span><span style=color:#a3be8c;>"underBosses"
+</span><span>underBossesRel.minCount = </span><span style=color:#d08770;>0
+</span><span>underBossesRel.maxCount = </span><span style=color:#d08770;>0 </span><span style=color:#65737e;>// To-Many
+</span><span>underBossesRel.deleteRule = .nullifyDeleteRule
+</span><span>underBossesRel.destinationEntity = bossDescription
+</span><span>
+</span><span>bossOneRel.inverseRelationship = underBossesRel
+</span><span>underBossesRel.inverseRelationship = bossOneRel
+</span><span>
+</span><span style=color:#b48ead;>let</span><span> bossesMulRel = NSRelationshipDescription()
+</span><span>bossesMulRel.name = </span><span style=color:#a3be8c;>"bosses"
+</span><span>bossesMulRel.minCount = </span><span style=color:#d08770;>0
+</span><span>bossesMulRel.maxCount = </span><span style=color:#d08770;>0  </span><span style=color:#65737e;>// To-Many
+</span><span>bossesMulRel.deleteRule = .nullifyDeleteRule
+</span><span>bossesMulRel.destinationEntity = bossDescription
+</span><span>
+</span><span style=color:#b48ead;>let</span><span> employeeMulRel = NSRelationshipDescription()
+</span><span>employeeMulRel.name = </span><span style=color:#a3be8c;>"employees"
+</span><span>employeeMulRel.minCount = </span><span style=color:#d08770;>0
+</span><span>employeeMulRel.maxCount = </span><span style=color:#d08770;>0  </span><span style=color:#65737e;>// To-Many
+</span><span>employeeMulRel.deleteRule = .nullifyDeleteRule
+</span><span>employeeMulRel.destinationEntity = employeeDescription
+</span></code></pre><p>Each relationship object is identified by its <code>name</code> property. You configure the relationship with the following options:<ul><li><code>destinationEntity</code>: The name of the <code>NSEntityDescription</code> targeted by this relationship.<li><code>minCount</code>: The minimum value of nodes targeted by this relationship.<li><code>maxCount</code>: The maximum value of nodes targeted by this relationship. Using <code>0</code> means no limit.<li><code>deleteRule</code>: When the node hosting this relationship is deleted, this property tells to CoreData what to do with the targeted node(s) (delete them also, simply cut the edges, etc).</ul><p>Now we can assign each properties to the corresponding <code>NSEntityDescription</code>:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Assign Relationships
+</span><span>bossDescription.properties = [employeeMulRel, underBossesRel, bossOneRel, nameBossAttr];
+</span><span>employeeDescription.properties = [bossesMulRel, nameEmployeeAttr, specialityAttr];
+</span></code></pre><p>If you have paid attention to the relationship's rules, you would have notice that some relationships are kind of "connected". Getting the <code>bosses</code> property of the <code>Employee</code> node is the opposite of getting the <code>employees</code> property of the <code>Boss</code> node. By opposite I mean that if you have one <code>Employee</code> node and you get one <code>Boss</code> node through the <code>bosses</code> property, you can go back to the <code>Employee</code> instance by using the <code>employees</code> property of the <code>Boss</code> node.<p>This should be expressed in CoreData by using the <code>inverseRelationship</code> property of <code>NSRelationshipDescription</code>:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Specifying inverse
+</span><span>bossesMulRel.inverseRelationship = employeeMulRel
+</span><span>employeeMulRel.inverseRelationship = bossesMulRel
+</span></code></pre><p>Now we can try to create a graph and one <code>Boss</code> node inside it:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Create an object and insert it
+</span><span style=color:#b48ead;>let</span><span> context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+</span><span style=color:#b48ead;>let</span><span> obj1 = NSManagedObject(entity: bossDescription, insertInto: context)
+</span><span>
+</span><span style=color:#65737e;>// Check the context status.
+</span><span>print(</span><span style=color:#a3be8c;>"The context has now: </span><span>\(context.insertedObjects.count) </span><span style=color:#a3be8c;>objects inserted."</span><span>)
+</span></code></pre><p>The output gives us:<pre style=background-color:#2b303b;color:#c0c5ce;><code><span>The context has now: 1 objects inserted.
+</span></code></pre><p>Great, we succeeded to create a graph instance and one node!<h1 id=reducing-the-boilerplate-code-with-nsmanagedobjectmodel>Reducing the boilerplate code with <code>NSManagedObjectModel</code></h1><p>Our current graph rules are basic and you would have noticed that we required a lot of lines to describes them. Using code is not the only way to describe our business logic. Inside the documentation of the <code>NSEntityDescription</code>, you will find this sentence:<p><em>You usually define entities in a Managed object model using the data modeling tool in Xcode</em> {: .notice }<p>If you have heard about CoreData before, the <em>Managed Object Model</em> is the first tool you have been presented to without any further information. It will help to create a bunch of <code>NSEntityDescription</code> with a graphical editor. This will produce one <code>.xcdatamodel</code> model file that will be compiled into one <code>.momd</code> file.<p>If this file is present in your application's bundle, you will be able to access it from CoreData API to create one <code>NSManagedObjectModel</code> instance.<p><img alt="The Managed Object Model tool in Xcode"src=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/managed_model_tool.png><p>A <code>NSManagedObjectModel</code> instance is basically a bag that contains all the <code>NSEntityDescription</code>, <code>NSAttributeDescription</code> and <code>NSRelationshipDescription</code> we defined in the editor.<p>Assuming you have recreated the previous rules using a <code>.xcdatamodel</code>, you can load them using the <code>NSManagedObjectModel</code> class:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>let</span><span> fileURL = Bundle.main.url(forResource: </span><span style=color:#a3be8c;>"SimpleGraph"</span><span>, withExtension: </span><span style=color:#a3be8c;>"momd"</span><span>)!
+</span><span style=color:#b48ead;>let</span><span> model = NSManagedObjectModel(contentsOf: fileURL)!
+</span></code></pre><p>Then we can retrieve the <code>NSEntityDescription</code> we are interested in and reuse the same code to instantiate the node and the graph:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>let</span><span> bossDescription = model.entitiesByName[</span><span style=color:#a3be8c;>"Boss"</span><span>]!
+</span><span>
+</span><span style=color:#65737e;>// Create an object and insert it
+</span><span style=color:#b48ead;>let</span><span> context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+</span><span style=color:#b48ead;>let</span><span> obj1 = NSManagedObject(entity: bossDescription, insertInto: context)
+</span><span>
+</span><span style=color:#65737e;>// Check the context status.
+</span><span>print(</span><span style=color:#a3be8c;>"The context has now: </span><span>\(context.insertedObjects.count) </span><span style=color:#a3be8c;>objects inserted."</span><span>)
+</span></code></pre><p>And the output is exactly the same as before.<h1 id=working-on-the-node>Working on the node</h1><p>Creating empty nodes is not really usefull. We should be able to modify the data they contain and create connections between them. For now we have a graph of basic <code>NSManagedObject</code> instances.<p><img alt="An empty graph of NSManagedObject instances"src=https://yageek.net/a-taste-of-core-data-0-a-graph-framework/empty_object_graph.png><p>How do we access to the node's properties we have defined? By taking a look to the <code>NSManagedObject</code> documentation, a paragraph gives us some information:<p><em><strong>Core Data automatically generates accessor methods (and primitive accessor methods) for you</strong>. For attributes and to-one relationships, Core Data generates the standard get and set accessor methods; for to-many relationships, <strong>Core Data generates the indexed accessor methods as described in Achieving Basic Key-Value Coding Compliance in Key-Value Coding Programming Guide</strong>. You do however need to declare the accessor methods or use Objective-C properties to suppress compiler warnings. For a full discussion, see Managed Object Accessor Methods in Core Data Programming Guide.</em> {: .notice }<p>What does this means is that CoreData makes your node automatically <a href=https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/KeyValueCoding/Compliant.html#//apple_ref/doc/uid/20002172-BAJEAIEE>KVC/KVO compliant</a> according to the relationships and attributes you defined in the model.<p>In addition to this, you have two methods defined in <code>NSManagedObjectContext</code> that provide you a read and write access to the <code>NSManagedObjectModel</code> private storage that do not trigger KVO notifications.<pre class=language-objective-c data-lang=objective-c style=background-color:#2b303b;color:#c0c5ce;><code class=language-objective-c data-lang=objective-c><span style=color:#65737e;>/* Direct access to NSManagedObject private internal storage */
+</span><span style=color:#65737e;>/* Does not triggers KVO updates */
+</span><span>- (</span><span style=color:#b48ead;>void</span><span>)setPrimitiveValue:(</span><span style=color:#b48ead;>id</span><span>)value forKey:(</span><span style=color:#ebcb8b;>NSString </span><span>*)key;
+</span><span>- (</span><span style=color:#b48ead;>id</span><span>)primitiveValueForKey:(</span><span style=color:#ebcb8b;>NSString </span><span>*)key;
+</span><span>
+</span><span style=color:#65737e;>/* Proxy methods to the upper ones */
+</span><span style=color:#65737e;>/* Triggers KVO updates === KVC*/
+</span><span>- (</span><span style=color:#b48ead;>id</span><span>)valueForKey:(</span><span style=color:#ebcb8b;>NSString </span><span>*)key;
+</span><span>- (</span><span style=color:#b48ead;>void</span><span>)setValue:(</span><span style=color:#b48ead;>id</span><span>)value forKey:(</span><span style=color:#ebcb8b;>NSString </span><span>*)key;
+</span><span>- (</span><span style=color:#ebcb8b;>NSMutableSet </span><span>*)mutableSetValueForKey:(</span><span style=color:#ebcb8b;>NSString </span><span>*)key;
+</span></code></pre><p>Once we know this, we can play a little further. Let's reload the graph and load both entities:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>let</span><span> fileURL = Bundle.main.url(forResource: </span><span style=color:#a3be8c;>"SimpleGraph"</span><span>, withExtension: </span><span style=color:#a3be8c;>"momd"</span><span>)!
+</span><span style=color:#b48ead;>let</span><span> model = NSManagedObjectModel(contentsOf: fileURL)!
+</span><span>
+</span><span style=color:#65737e;>// Load Entities
+</span><span style=color:#b48ead;>let</span><span> bossDescription = model.entitiesByName[</span><span style=color:#a3be8c;>"Boss"</span><span>]!
+</span><span style=color:#b48ead;>let</span><span> employeeDescription = model.entitiesByName[</span><span style=color:#a3be8c;>"Employee"</span><span>]!
+</span><span>
+</span><span style=color:#65737e;>// Create Graph
+</span><span style=color:#b48ead;>let</span><span> context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+</span></code></pre><p>We create a <code>Boss</code> node and try to read the default <code>name</code> value:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Create one entity
+</span><span style=color:#b48ead;>let</span><span> boss = NSManagedObject(entity: bossDescription, insertInto: context)
+</span><span style=color:#65737e;>// Get the default name
+</span><span>print(</span><span style=color:#a3be8c;>"Boss name value: </span><span>\(boss.value(forKey: </span><span style=color:#a3be8c;>"name"</span><span>)</span><span style=color:#a3be8c;>)"</span><span>) </span><span style=color:#65737e;>// --> Output: Optional(No Name)
+</span></code></pre><p>We can change the name:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Change the name
+</span><span>boss.setValue(</span><span style=color:#a3be8c;>"Changed Name with primitives"</span><span>, forKey: </span><span style=color:#a3be8c;>"name"</span><span>)
+</span><span style=color:#65737e;>// Get the default name
+</span><span>print(</span><span style=color:#a3be8c;>"Boss updated name value: </span><span>\(boss.value(forKey: </span><span style=color:#a3be8c;>"name"</span><span>)</span><span style=color:#a3be8c;>)"</span><span>) </span><span style=color:#65737e;>// --> Output: Boss updated name value: Optional(Changed Name with primitives)
+</span></code></pre><p>Now it is time to connect some nodes:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Create one employee and add it to the boss employee sets.
+</span><span style=color:#b48ead;>let</span><span> employeeDescription = model.entitiesByName[</span><span style=color:#a3be8c;>"Employee"</span><span>]!
+</span><span style=color:#b48ead;>let</span><span> employee = NSManagedObject(entity: employeeDescription, insertInto: context)
+</span><span>
+</span><span style=color:#b48ead;>let</span><span> employeesSet = boss.mutableSetValue(forKey: </span><span style=color:#a3be8c;>"employees"</span><span>)
+</span><span>employeesSet.add(employee)
+</span><span>boss.setValue(employeesSet, forKey: </span><span style=color:#a3be8c;>"employees"</span><span>)
+</span><span>
+</span><span style=color:#65737e;>// Check the new sets
+</span><span style=color:#b48ead;>let set </span><span>= boss.value(forKey: </span><span style=color:#a3be8c;>"employees"</span><span>) as! NSSet
+</span><span>print(</span><span style=color:#a3be8c;>"Boss has : </span><span>\(</span><span style=color:#b48ead;>set</span><span>.count) </span><span style=color:#a3be8c;>employee(s)"</span><span>)
+</span><span>
+</span><span style=color:#b48ead;>for</span><span> element </span><span style=color:#b48ead;>in set</span><span> {
+</span><span>    </span><span style=color:#b48ead;>let</span><span> object = element as! NSManagedObject
+</span><span>    print(</span><span style=color:#a3be8c;>"Entity of element: </span><span>\(object.entity.name)</span><span style=color:#a3be8c;>"</span><span>)
+</span><span>} </span><span style=color:#65737e;>//
+</span></code></pre><p>We can check that the connection is effective:<pre style=background-color:#2b303b;color:#c0c5ce;><code><span>Boss has : 1 employee(s)
+</span><span>Entity of element: Optional("Employee")
+</span></code></pre><h1 id=adding-business-semantics-and-rereduce-boilerplate>Adding business semantics and rereduce boilerplate</h1><p>You should tell me that this looks like boilerplate code again. Using the KVC primitives is error prone and not really developer friendly. The <a href=https://developer.apple.com/documentation/coredata/nsmanagedobject>documentation</a> of <code>NSManagedObject</code> has a suggestion:<p><em>You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete Object graph can be formed with NSManagedObject instances.</em> {: .notice}<p>Creating <code>NSManagedObject</code> subclasses will benefit from the whole power of KVC. For the <code>Boss</code> node, we can create a subclass:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>public class</span><span> Boss: NSManagedObject {
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> name: String?
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> bosses: Set&LTBoss>?
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> employees: Set&LTEmployee>
+</span><span>    
+</span><span>    </span><span style=color:#b48ead;>@NSManaged func </span><span>addEmployeesObject(_ employee: Employee)
+</span><span>}
+</span></code></pre><p><code>@NSManaged</code> is a swift statement that corresponds to the Objective-C <code>@dynamic</code> statement. The Objective-C equivalent of the previous code is:<pre class=language-objective-c data-lang=objective-c style=background-color:#2b303b;color:#c0c5ce;><code class=language-objective-c data-lang=objective-c><span style=color:#b48ead;>@interface </span><span>Boss</span><span style=color:#8fa1b3;>: </span><span style=color:#a3be8c;>NSManagedObject
+</span><span>
+</span><span style=color:#b48ead;>@property</span><span>(</span><span style=color:#b48ead;>nonatomic</span><span>, </span><span style=color:#b48ead;>copy</span><span>) </span><span style=color:#ebcb8b;>NSString </span><span>*Employees;
+</span><span style=color:#b48ead;>@property</span><span>(</span><span style=color:#b48ead;>nonatomic</span><span>, </span><span style=color:#b48ead;>copy</span><span>) </span><span style=color:#ebcb8b;>NSSet</span><span>* bosses;
+</span><span style=color:#b48ead;>@property</span><span>(</span><span style=color:#b48ead;>nonatomic</span><span>, </span><span style=color:#b48ead;>copy</span><span>) </span><span style=color:#ebcb8b;>NSSet</span><span>* employees;
+</span><span>
+</span><span>- (</span><span style=color:#b48ead;>void</span><span>)</span><span style=color:#8fa1b3;>addEmployeesObject:</span><span>(Employee *) employee;
+</span><span style=color:#b48ead;>@end
+</span><span>
+</span><span style=color:#b48ead;>@implementation </span><span>Boss
+</span><span>
+</span><span style=color:#b48ead;>@dynamic</span><span> name;
+</span><span style=color:#b48ead;>@dynamic</span><span> bosses;
+</span><span style=color:#b48ead;>@dynamic</span><span> employees;
+</span><span style=color:#b48ead;>@end
+</span></code></pre><p>If you remember, using <code>@dynamic</code> promises that, if an objective-c property (getter/setter) does not exist at compile-time, an implementation will be provided at runtime (Here, they are provided by CoreData).<p>So we can refactor the previous code using subclasses. Let first declare the <code>Boss</code> and <code>Employee</code> classes:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>@objc</span><span>(Boss)
+</span><span style=color:#b48ead;>public class</span><span> Boss: NSManagedObject {
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> name: String?
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> bosses: Set&LTBoss>?
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> employees: Set&LTEmployee>
+</span><span>    
+</span><span>    </span><span style=color:#b48ead;>@NSManaged func </span><span>addEmployeesObject(_ employee: Employee)
+</span><span>}
+</span><span>
+</span><span style=color:#b48ead;>@objc</span><span>(Employee)
+</span><span style=color:#b48ead;>public class</span><span> Employee: NSManagedObject {
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> name: String?
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> boss: Boss?
+</span><span>}
+</span></code></pre><p><strong>Note:</strong> Regarding in which module namespace you are working, you may need to override manually the name of the class in Objective-C. Here we are working in the global namespace of a playground (no prefix). We have to specify it manually using one <code>@objc</code> statement.<p>Modifying the contents of the nodes is now a piece of cake:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>let</span><span> boss = Boss(entity: bossDescription, insertInto: context)
+</span><span>print(</span><span style=color:#a3be8c;>"Boss name value: </span><span>\(boss.name)</span><span style=color:#a3be8c;>"</span><span>)
+</span><span style=color:#65737e;>// Change the name
+</span><span>boss.name = </span><span style=color:#a3be8c;>"Changed Name with primitives"
+</span><span>
+</span><span style=color:#65737e;>// Get the default name
+</span><span>print(</span><span style=color:#a3be8c;>"Boss updated name value: </span><span>\(boss.name)</span><span style=color:#a3be8c;>"</span><span>)
+</span><span>
+</span><span style=color:#65737e;>// Create one employee and add it to the boss employee sets.
+</span><span style=color:#b48ead;>let</span><span> employeeDescription = model.entitiesByName[</span><span style=color:#a3be8c;>"Employee"</span><span>]!
+</span><span style=color:#b48ead;>let</span><span> employee = Employee(entity: employeeDescription, insertInto: context)
+</span><span>
+</span><span>boss.addEmployeesObject(employee)
+</span><span style=color:#65737e;>// Check the new sets
+</span><span style=color:#b48ead;>let set </span><span>= boss.employees
+</span><span>print(</span><span style=color:#a3be8c;>"Boss has : </span><span>\(</span><span style=color:#b48ead;>set</span><span>.count) </span><span style=color:#a3be8c;>employee(s)"</span><span>)
+</span><span>
+</span><span style=color:#b48ead;>for</span><span> element </span><span style=color:#b48ead;>in set</span><span> {
+</span><span>    print(</span><span style=color:#a3be8c;>"Entity of element: </span><span>\(element)</span><span style=color:#a3be8c;>"</span><span>)
+</span><span>} </span><span style=color:#65737e;>// Same output as before
+</span></code></pre><h1 id=is-this-black-magic>Is this black magic?</h1><p>The generation of KVC properties and the usage of <code>@dynamic/@NSManaged</code> looks like black magic but it is not. CoreData is one Objective-C framework and rely highly on the dynamicity of the language. Let's try to have a basic idea on how is CoreData working under the hood.<p>If you have ever played with the Objective-C runtime, you would know that you can perform a lot at runtime, like adding an instance variable to existing compiled classes <sup class=footnote-reference><a href=#4>4</a></sup>.<p>Let's create a basic <code>NSObject</code> subclass and declares a variables as <code>@NSManaged/@dynamic</code>:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>@objc class</span><span> MyClass: NSObject {
+</span><span>    </span><span style=color:#b48ead;>@NSManaged var</span><span> value: NSString?
+</span><span>}
+</span></code></pre><p>For now we can not call the <code>value</code> property because it does not exist:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// The class is empty
+</span><span style=color:#b48ead;>let</span><span> i = MyClass()
+</span><span>print(</span><span style=color:#a3be8c;>"Value: </span><span>\(i.value)</span><span style=color:#a3be8c;>"</span><span>) </span><span style=color:#65737e;>// Crash!!!
+</span></code></pre><p>The idea is to add an instance variable to the class and both getter and setter to the class at runtime. We will use the <code>objc_getAssociatedObject</code>, <code>objc_setAssociatedObject</code> and <code>class_addMethod</code> of the Objective-C runtime.<p>Let's start with the instance variable:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#b48ead;>import </span><span>ObjectiveC
+</span><span>
+</span><span style=color:#65737e;>// Set default value to prevent crash
+</span><span style=color:#b48ead;>var</span><span> objKey: UInt8 = </span><span style=color:#d08770;>0
+</span><span>objc_setAssociatedObject(i, &objKey, </span><span style=color:#a3be8c;>"Default Value" </span><span>as NSString, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+</span></code></pre><p>To implement a method, you have to remember that each Objc method's implementation is provided by one <code>IMP</code>. This corresponds to a <code>C</code> pointer of function. We know that this pointer of function has the same arguments as its corresponding selector in addition to the class instance and the instance of the selector as first arguements.<p>We can create an implementation of those functions:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// typedef id (*IMP)(id self,SEL _cmd,...)
+</span><span style=color:#65737e;>// Define a setter and getter type
+</span><span style=color:#b48ead;>typealias</span><span> ValueGetter = </span><span style=color:#b48ead;>@convention</span><span>(c) (AnyObject, Selector) -> Any?
+</span><span style=color:#b48ead;>typealias</span><span> ValueSetter = </span><span style=color:#b48ead;>@convention</span><span>(c) (AnyObject, Selector, NSString) -> Void
+</span><span>
+</span><span style=color:#65737e;>// Define a setter
+</span><span style=color:#b48ead;>let</span><span> setter: ValueSetter = { (selfInstance, selector, value) </span><span style=color:#b48ead;>in
+</span><span>    objc_setAssociatedObject(selfInstance, &objKey, value, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+</span><span>}
+</span><span>
+</span><span style=color:#65737e;>// Define a getter
+</span><span style=color:#b48ead;>let</span><span> getter: ValueGetter = { (selfInstance, selector) </span><span style=color:#b48ead;>in
+</span><span>    </span><span style=color:#b48ead;>return</span><span> objc_getAssociatedObject(selfInstance, &objKey)
+</span><span>}
+</span></code></pre><p>Now we can simply add those methods to the runtime:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span style=color:#65737e;>// Attach the setter
+</span><span style=color:#b48ead;>let</span><span> setterIMP = unsafeBitCast(setter, to: IMP.</span><span style=color:#b48ead;>self</span><span>)
+</span><span style=color:#b48ead;>let</span><span> setterSignature = </span><span style=color:#a3be8c;>"v@:@"</span><span>.cString(using: String.defaultCStringEncoding)
+</span><span style=color:#b48ead;>let</span><span> pS = UnsafePointer&LTInt8>(setterSignature)
+</span><span>class_addMethod(MyClass.</span><span style=color:#b48ead;>self</span><span>, Selector(</span><span style=color:#a3be8c;>"setValue:"</span><span>), setterIMP, pS)
+</span><span>
+</span><span style=color:#65737e;>// Attach the getter
+</span><span style=color:#b48ead;>let</span><span> getterIMP = unsafeBitCast(getter, to: IMP.</span><span style=color:#b48ead;>self</span><span>)
+</span><span style=color:#b48ead;>let</span><span> getterSignature = </span><span style=color:#a3be8c;>"@@:"</span><span>.cString(using: String.defaultCStringEncoding)
+</span><span style=color:#b48ead;>let</span><span> pG = UnsafePointer&LTInt8>(getterSignature)
+</span><span>class_addMethod(MyClass.</span><span style=color:#b48ead;>self</span><span>, Selector(</span><span style=color:#a3be8c;>"value"</span><span>), getterIMP, pG)
+</span></code></pre><p>We can now test our basic runtime changes:<pre class=language-swift data-lang=swift style=background-color:#2b303b;color:#c0c5ce;><code class=language-swift data-lang=swift><span>print(</span><span style=color:#a3be8c;>"Value: </span><span>\(i.value)</span><span style=color:#a3be8c;>"</span><span>) </span><span style=color:#65737e;>// Output: Value: Optional(Default Value)
+</span><span>
+</span><span style=color:#65737e;>// Update
+</span><span>i.value = </span><span style=color:#a3be8c;>"Changed value" </span><span>as NSString
+</span><span>
+</span><span style=color:#65737e;>// Read
+</span><span>print(</span><span style=color:#a3be8c;>"Value: </span><span>\(i.value)</span><span style=color:#a3be8c;>"</span><span>) </span><span style=color:#65737e;>// Value: Optional(Changed value)
+</span></code></pre><p>It does not crash anymore and the behaviour is the one expected. Of course CoreData is using a much more sophisticated strategy to compute and provide all the required properties at runtime. This is done during the object's initialization. The documentation of <code>initWithEntity:insertIntoManagedObjectContext:</code> specifies:<p><em>NSManagedObject uses dynamic class generation to support the Objective-C 2 properties feature (see Declared Properties) by automatically creating a subclass of the class appropriate for entity. initWithEntity:insertIntoManagedObjectContext: therefore returns an instance of the appropriate class for entity. The dynamically-generated subclass will be based on the class specified by the entity, so specifying a custom class in your model will supersede the class passed to alloc.</em> {: .notice }<p>We know the basic about how to model and create our graph and our nodes. In a next post, we'll take a look about the other face of CoreData and see how we can persist our graph on the disk.<div class=footnote-definition id=1><sup class=footnote-definition-label>1</sup><p><a href=http://asciiwwdc.com/2010/sessions/118>Mastering Core Data - WWDC 2010 - Session 128</a> <sup class=footnote-reference><a href=#2>2</a></sup>: <a href=https://www.amazon.com/Core-Data-Storage-Management-iCloud/dp/1937785084>Core Data: Data Storage and Management for iOS, OS X, and iCloud 2nd Edition - Marcus Zarra</a> <sup class=footnote-reference><a href=#3>3</a></sup>: <a href=https://www.objc.io/books/core-data/>Core Data - Florian Kugler and Daniel Eggert</a> <sup class=footnote-reference><a href=#4>4</a></sup>: <a href=http://nshipster.com/associated-objects/>Associated Objects - NSHipster.com</a></div></article></div><div class=pagination><div class=pagination__buttons></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2022 <a href=https://github.com/ejmg/zerm>zerm</a> :: Powered by <a href=https://www.getzola.org/>Zola</a></span><span>:: Theme made by <a href=https://github.com/ejmg>ejmg</a></span></div><script src=https://yageek.net/assets/js/main.js></script></div></footer></div>

@@ -1,6 +1,5 @@
 +++
 in_search_index = false
-generate_feed = false
 transparent = true
 +++
 

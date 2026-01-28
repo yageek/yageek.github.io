@@ -1,0 +1,90 @@
+<!doctype html><html lang=en><head><title>Scrollable custom view inside a UIWebView - yageek</title><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content="width=device-width,initial-scale=1.0,maximum-scale=1" name=viewport><meta content="The personal website of Yannick Heinrich Scrollable custom view inside a UIWebView " name=description><meta content="UI, apple, ios, uikit, scrollview, pinning, objective-c" name=keywords><meta content="Yannick Heinrich - Scrollable custom view inside a UIWebView" property=og:title><meta content=website property=og:type><meta content=https://blog.yageek.net/scrollable-custom-view-inside-a-uiwebview/ property=og:url><meta content="The personal website of Yannick Heinrich" property=og:description><link as=font crossorigin href=https://blog.yageek.net/assets/fonts/FiraCode-Regular.woff2 rel=preload type=font/woff2><link as=font crossorigin href=https://blog.yageek.net/assets/fonts/FiraCode-Bold.woff2 rel=preload type=font/woff2><link href="https://blog.yageek.net/style.css?h=97e262212a0704163528" rel=stylesheet><link href="https://blog.yageek.net/color/green.css?h=c685075d8d57bb1e0d87" rel=stylesheet><link href=https://blog.yageek.net/atom.xml rel=alternate title=RSS type=application/atom+xml><body><div class="container full"><header class=header><div class=header__inner><div class=header__logo><a href=/> <div class=logo>yageek</div> </a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href="
+    
+        https://blog.yageek.net/about
+    
+">about</a><li><a href="
+    
+        https://blog.yageek.net/projects
+    
+">projects</a><li><a href="
+    
+        https://speakerdeck.com/yageek
+    
+">speakerdeck</a><li><a href="
+    
+        https://github.com/yageek
+    
+">github</a><li><a href="
+    
+        https://www.linkedin.com/in/yageek/
+    
+">linkedin</a><li><a href="
+    
+        https://www.strava.com/athletes/30110076
+    
+">strava</a></ul><ul class="menu__inner menu__inner--mobile"><li><a href="
+    
+        https://blog.yageek.net/about
+    
+">about</a><li><a href="
+    
+        https://blog.yageek.net/projects
+    
+">projects</a><li><a href="
+    
+        https://speakerdeck.com/yageek
+    
+">speakerdeck</a><li><a href="
+    
+        https://github.com/yageek
+    
+">github</a><li><a href="
+    
+        https://www.linkedin.com/in/yageek/
+    
+">linkedin</a><li><a href="
+    
+        https://www.strava.com/athletes/30110076
+    
+">strava</a></ul></nav></header><div class=content><article class=post><header><h1 class=post-title><a href=https://blog.yageek.net/scrollable-custom-view-inside-a-uiwebview/>Scrollable custom view inside a UIWebView</a></h1><div class=post-meta><span class=post-date>2015.02.18 </span><span class=post-author></span> :: {<a href=https://blog.yageek.net/categories/ui/>UI</a>, <a href=https://blog.yageek.net/categories/apple/>apple</a>} :: #<a href=https://blog.yageek.net/tags/ios/>ios</a> #<a href=https://blog.yageek.net/tags/uikit/>uikit</a> #<a href=https://blog.yageek.net/tags/scrollview/>scrollview</a> #<a href=https://blog.yageek.net/tags/pinning/>pinning</a> #<a href=https://blog.yageek.net/tags/objective-c/>objective-c</a></div></header><p>Displaying HTML content is very easy on iOS. Just grab a <code>UIWebView</code> and call <code>loadHTMLString:baseURL</code> or <code>loadData:MIMEType:textEncodingName:baseURL:</code> and enjoy the results. This component would fit your needs 90% of the time. But in some cases, having a simple <code>UIWebView</code> is not enough.<p>For professional reasons, I had to implement a mail reader like screen. On such a screen, there is a fixed portion on the screen that scrolls along with the portion rendering the HTML. I did not build such a view before and start thinking how I could make it.<p>After thinking a little bit, I first thought about implementing the fixed portion in HTML/CSS. No offense to those technologies, but they are not really my cup of tea.<p>I start searching on the Internet to see if someone founds a nice way implementing this without using private APIS.<h1 id=tweaking-the-internal-uiwebbrowserview>Tweaking the internal <code>UIWebBrowserView</code></h1><p>Each <code>UIWebView</code> contains a <code>UIScrolView</code>. Inside this scroll view, the HTML is rendered by a Apple internal private <code>UIView</code> subclass named <code>UIWebBrowserView</code>. It is possible to get a reference to this subview.<p>To have a reference to it, simply loop over the subviews contained within the <code>UIScrollView</code> of the <code>UIWebView</code>:<pre class=giallo style=color:#cdd6f4;background-color:#1e1e2e><code data-lang=objective-c><span class=giallo-l><span style=color:#cba6f7>for</span><span style=color:#9399b2>(</span><span>UIView </span><span style=color:#94e2d5>*</span><span>subview </span><span style=color:#cba6f7>in</span><span> self.webView.scrollView.subviews</span><span style=color:#9399b2>)</span></span>
+<span class=giallo-l><span style=color:#9399b2>        {</span></span>
+<span class=giallo-l><span style=color:#f9e2af;font-style:italic>            NSString</span><span style=color:#94e2d5> *</span><span> className </span><span style=color:#94e2d5>=</span><span style=color:#89b4fa;font-style:italic> NSStringFromClass</span><span style=color:#9399b2>([</span><span>subview </span><span style=color:#89b4fa;font-style:italic>class</span><span style=color:#9399b2>]);</span></span>
+<span class=giallo-l><span style=color:#cba6f7>            if</span><span style=color:#9399b2>([</span><span>className </span><span style=color:#89b4fa;font-style:italic>isEqualToString</span><span style=color:#9399b2>:</span><span style=color:#a6e3a1>@"UIWebBrowserView"</span><span style=color:#9399b2>])</span></span>
+<span class=giallo-l><span style=color:#9399b2>            {</span></span>
+<span class=giallo-l><span style=color:#9399b2;font-style:italic>            	//YES ! Just grab a reference to it :)</span></span>
+<span class=giallo-l><span>                self</span><span style=color:#9399b2>.</span><span>HTMLRender</span><span style=color:#94e2d5>  =</span><span> subview</span><span style=color:#9399b2>;</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:#9399b2;font-style:italic>                //Set the frame of the view to fit your needs</span></span>
+<span class=giallo-l><span style=color:#cba6f7>                break</span><span style=color:#9399b2>;</span></span>
+<span class=giallo-l><span style=color:#9399b2>            }</span></span>
+<span class=giallo-l><span style=color:#9399b2>        }</span></span></code></pre><p>Once you grab it, you can use and place this view by setting its <code>frame</code>.<p>This works great, but it has the smell of a big workaround :( Would it be possible to do it in a easier way ?<h1 id=do-it-thanks-to-the-documentation>Do it thanks to the documentation</h1><p>I read the article in the great <a href=http://www.objc.io/ rel=external>objc.io</a> concerning <a href=http://www.objc.io/issue-3/scroll-view.html rel=external>scroll views</a> and the start of a solution appears by reading the part <strong>Tweaking the Window with Content Insets</strong>.<p>The main idea is to use the <code>contentInset</code> property of the <code>UIScrollView</code> of the <code>UIWebView</code> to create a space at the top of the <code>UIWebView</code> and fill it with some view.<p>It is better to see with an example. Let's create a <code>UIWebView</code> subclass named <code>AwesomeWebView</code>. This will be a web view with a 100 points red view at this top.<pre class=giallo style=color:#cdd6f4;background-color:#1e1e2e><code data-lang=objective-c><span class=giallo-l><span style=color:#f9e2af>#define</span><span style=color:#89b4fa;font-style:italic> TOP_SPACE_HEIGHT</span><span style=color:#fab387> 100.0f</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:#9399b2>@</span><span style=color:#cba6f7>interface</span><span style=color:#f9e2af;font-style:italic> AwesomeWebView</span><span style=color:#9399b2> :</span><span style=color:#f9e2af;font-style:italic> UIWebView</span></span>
+<span class=giallo-l><span style=color:#9399b2>@</span><span style=color:#cba6f7>end</span></span></code></pre><p>All the work could be done in the initializer. The only thing to consider, is that adding a contentInset create a zone in the view where the coordinates are negatives.<pre class=giallo style=color:#cdd6f4;background-color:#1e1e2e><code data-lang=objective-c><span class=giallo-l><span style=color:#94e2d5>-</span><span style=color:#9399b2> (</span><span style=color:#cba6f7>id</span><span style=color:#9399b2>)</span><span> initWithFrame:</span><span style=color:#9399b2>(</span><span style=color:#f9e2af;font-style:italic>CGRect</span><span style=color:#9399b2>)</span><span>frame</span></span>
+<span class=giallo-l><span style=color:#9399b2>{</span></span>
+<span class=giallo-l><span style=color:#cba6f7>    if</span><span style=color:#9399b2>(</span><span>self</span><span style=color:#94e2d5> =</span><span style=color:#9399b2> [</span><span>super</span><span style=color:#89b4fa;font-style:italic> initWithFrame</span><span style=color:#9399b2>:</span><span>frame</span><span style=color:#9399b2>])</span></span>
+<span class=giallo-l><span style=color:#9399b2>    {</span></span>
+<span class=giallo-l><span style=color:#9399b2>        [</span><span>self</span><span style=color:#89b4fa;font-style:italic> setupScrollView</span><span style=color:#9399b2>:</span><span>TOP_SPACE_HEIGHT</span><span style=color:#9399b2>];</span><span style=color:#9399b2;font-style:italic> // Setting the contentInset</span></span>
+<span class=giallo-l><span style=color:#9399b2>    }</span></span>
+<span class=giallo-l><span style=color:#cba6f7>    return</span><span> self</span><span style=color:#9399b2>;</span></span>
+<span class=giallo-l><span style=color:#9399b2>}</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:#94e2d5>-</span><span style=color:#9399b2> (</span><span style=color:#cba6f7>void</span><span style=color:#9399b2>)</span><span> setupScrollView:</span><span style=color:#9399b2>(</span><span style=color:#f9e2af;font-style:italic>CGFloat</span><span style=color:#9399b2>)</span><span>headerHeight</span></span>
+<span class=giallo-l><span style=color:#9399b2>{</span></span>
+<span class=giallo-l><span style=color:#9399b2;font-style:italic>	// Set the contentInset to create space for the top View</span></span>
+<span class=giallo-l><span>    self</span><span style=color:#9399b2>.</span><span>scrollView</span><span style=color:#9399b2>.</span><span>contentInset</span><span style=color:#94e2d5> =</span><span style=color:#89b4fa;font-style:italic> UIEdgeInsetsMake</span><span style=color:#9399b2>(</span><span>headerHeight</span><span style=color:#9399b2>,</span><span style=color:#fab387> 0</span><span style=color:#9399b2>,</span><span style=color:#fab387> 0</span><span style=color:#9399b2>,</span><span style=color:#fab387> 0</span><span style=color:#9399b2>);</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:#9399b2;font-style:italic>    // Set the contentSize</span></span>
+<span class=giallo-l><span>    self</span><span style=color:#9399b2>.</span><span>scrollView</span><span style=color:#9399b2>.</span><span>contentSize</span><span style=color:#94e2d5> =</span><span style=color:#9399b2> (</span><span style=color:#f9e2af;font-style:italic>CGSize</span><span style=color:#9399b2>){</span><span style=color:#89b4fa;font-style:italic>CGRectGetWidth</span><span style=color:#9399b2>(</span><span>self</span><span style=color:#9399b2>.</span><span>frame</span><span style=color:#9399b2>),</span><span style=color:#89b4fa;font-style:italic> CGRectGetHeight</span><span style=color:#9399b2>(</span><span>self</span><span style=color:#9399b2>.</span><span>frame</span><span style=color:#9399b2>)</span><span style=color:#94e2d5> +</span><span> headerHeight</span><span style=color:#9399b2>};</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:#9399b2;font-style:italic>    //Make the scroll indicator insets starts at the bottom of the top view</span></span>
+<span class=giallo-l><span>    self</span><span style=color:#9399b2>.</span><span>scrollView</span><span style=color:#9399b2>.</span><span>scrollIndicatorInsets</span><span style=color:#94e2d5> =</span><span style=color:#89b4fa;font-style:italic> UIEdgeInsetsMake</span><span style=color:#9399b2>(</span><span>headerHeight</span><span style=color:#9399b2>,</span><span style=color:#fab387> 0</span><span style=color:#9399b2>,</span><span style=color:#fab387> 0</span><span style=color:#9399b2>,</span><span style=color:#fab387> 0</span><span style=color:#9399b2>);</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:#9399b2;font-style:italic>    //Initialize the redTopView</span></span>
+<span class=giallo-l><span style=color:#9399b2;font-style:italic>    //-> Keep in mind that the zone up to the scroll view is negative.</span></span>
+<span class=giallo-l><span>    UIView </span><span style=color:#94e2d5>*</span><span> redView </span><span style=color:#94e2d5>=</span><span style=color:#9399b2> [[</span><span>UIView </span><span style=color:#89b4fa;font-style:italic>alloc</span><span style=color:#9399b2>]</span><span style=color:#89b4fa;font-style:italic> initWithFrame</span><span style=color:#9399b2>:</span><span style=color:#89b4fa;font-style:italic>CGRectMake</span><span>(</span><span style=color:#fab387>0</span><span style=color:#9399b2>,</span><span style=color:#94e2d5> -</span><span>headerHeight</span><span style=color:#9399b2>,</span><span style=color:#89b4fa;font-style:italic> CGRectGetWidth</span><span>(self.frame)</span><span style=color:#9399b2>,</span><span> headerHeight)</span><span style=color:#9399b2>];</span></span>
+<span class=giallo-l><span>    redView</span><span style=color:#9399b2>.</span><span>backgroundColor</span><span style=color:#94e2d5> =</span><span style=color:#9399b2> [</span><span>UIColor </span><span style=color:#89b4fa;font-style:italic>redColor</span><span style=color:#9399b2>];</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:#9399b2;font-style:italic>    //Finally add it to the view;</span></span>
+<span class=giallo-l><span style=color:#9399b2>    [</span><span>self.scrollView </span><span style=color:#89b4fa;font-style:italic>addSubview</span><span style=color:#9399b2>:</span><span>redView</span><span style=color:#9399b2>];</span></span>
+<span class=giallo-l><span style=color:#9399b2>}</span></span></code></pre><p>This methods seems to be better than the first one.<p>You can find an example of this method on <a href=https://github.com/yageek/CustomWebview rel=external>github</a></article></div><div class=pagination><div class=pagination__buttons></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2026 <a href=https://github.com/ejmg/zerm>zerm</a> :: Powered by <a href=https://www.getzola.org/>Zola</a></span><span>:: Theme made by <a href=https://github.com/ejmg>ejmg</a></span></div><script src=https://blog.yageek.net/assets/js/main.js></script></div></footer></div>

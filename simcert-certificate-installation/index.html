@@ -1,0 +1,49 @@
+<!doctype html><html lang=en><head><title>How to automate the installation of HTTP certificates on XCode 7 - yageek</title><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content="width=device-width,initial-scale=1.0,maximum-scale=1" name=viewport><meta content="The personal website of Yannick Heinrich How to automate the installation of HTTP certificates on XCode 7 " name=description><meta content="security, apple, ios, certificates, http, pinning" name=keywords><meta content="Yannick Heinrich - How to automate the installation of HTTP certificates on XCode 7" property=og:title><meta content=website property=og:type><meta content=https://blog.yageek.net/simcert-certificate-installation/ property=og:url><meta content="The personal website of Yannick Heinrich" property=og:description><link as=font crossorigin href=https://blog.yageek.net/assets/fonts/FiraCode-Regular.woff2 rel=preload type=font/woff2><link as=font crossorigin href=https://blog.yageek.net/assets/fonts/FiraCode-Bold.woff2 rel=preload type=font/woff2><link href="https://blog.yageek.net/style.css?h=97e262212a0704163528" rel=stylesheet><link href="https://blog.yageek.net/color/green.css?h=c685075d8d57bb1e0d87" rel=stylesheet><link href=https://blog.yageek.net/atom.xml rel=alternate title=RSS type=application/atom+xml><body><div class="container full"><header class=header><div class=header__inner><div class=header__logo><a href=/> <div class=logo>yageek</div> </a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href="
+    
+        https://blog.yageek.net/about
+    
+">about</a><li><a href="
+    
+        https://blog.yageek.net/projects
+    
+">projects</a><li><a href="
+    
+        https://speakerdeck.com/yageek
+    
+">speakerdeck</a><li><a href="
+    
+        https://github.com/yageek
+    
+">github</a><li><a href="
+    
+        https://www.linkedin.com/in/yageek/
+    
+">linkedin</a><li><a href="
+    
+        https://www.strava.com/athletes/30110076
+    
+">strava</a></ul><ul class="menu__inner menu__inner--mobile"><li><a href="
+    
+        https://blog.yageek.net/about
+    
+">about</a><li><a href="
+    
+        https://blog.yageek.net/projects
+    
+">projects</a><li><a href="
+    
+        https://speakerdeck.com/yageek
+    
+">speakerdeck</a><li><a href="
+    
+        https://github.com/yageek
+    
+">github</a><li><a href="
+    
+        https://www.linkedin.com/in/yageek/
+    
+">linkedin</a><li><a href="
+    
+        https://www.strava.com/athletes/30110076
+    
+">strava</a></ul></nav></header><div class=content><article class=post><header><h1 class=post-title><a href=https://blog.yageek.net/simcert-certificate-installation/>How to automate the installation of HTTP certificates on XCode 7</a></h1><div class=post-meta><span class=post-date>2016.02.05 </span><span class=post-author></span> :: {<a href=https://blog.yageek.net/categories/security/>security</a>, <a href=https://blog.yageek.net/categories/apple/>apple</a>} :: #<a href=https://blog.yageek.net/tags/ios/>ios</a> #<a href=https://blog.yageek.net/tags/certificates/>certificates</a> #<a href=https://blog.yageek.net/tags/http/>http</a> #<a href=https://blog.yageek.net/tags/pinning/>pinning</a></div></header><p>Few months ago, I wrote a Ruby gem named <a href=https://github.com/yageek/iostrust rel=external>iostrust</a> to automate the installation of trusted certificate on the different iOS simulators.<p>This is really helpful when you have a development process that includes continuous integration.<br> In our case, we perform some tests with <a href=https://calaba.sh rel=external>calabash</a> each time someone commits to git and before starting the tests, we reset the simulator. As we are using HTTP pinning, we need to find a way to install automatically the certificates within the simulators.<p><em>iostrust</em> does not work with XCode 7 anymore. I spent some time to find a solution.<p>I first wanted to follow the same strategy (see [previous post]({% post_url 2015-04-26-certificate-pinning-ios-simulators %})) but I seemed to be really complex.<p>I noticed then that using the <em>Accessibility API</em> on OSX was giving access to the UI elements of the simulator and that it was possible to interact with them.<p>With this remarks plus some commands to launch/close the simulator application, I wrote a small Swift program named <strong>simcert</strong> that should solve the problem on XCode 7.<p><img alt=example src=https://media.githubusercontent.com/media/yageek/simcert/develop/sim_cert.gif><p>One .pkg file and some instructions are available on <a href=https://github.com/yageek/simcert rel=external>GitHub</a></article></div><div class=pagination><div class=pagination__buttons></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2026 <a href=https://github.com/ejmg/zerm>zerm</a> :: Powered by <a href=https://www.getzola.org/>Zola</a></span><span>:: Theme made by <a href=https://github.com/ejmg>ejmg</a></span></div><script src=https://blog.yageek.net/assets/js/main.js></script></div></footer></div>

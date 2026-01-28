@@ -1,0 +1,49 @@
+<!doctype html><html lang=en><head><title>Certificate Pinning issues with AFNetworking - yageek</title><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content="width=device-width,initial-scale=1.0,maximum-scale=1" name=viewport><meta content="The personal website of Yannick Heinrich Certificate Pinning issues with AFNetworking " name=description><meta content="security, apple, ios, certificates, http, pinning" name=keywords><meta content="Yannick Heinrich - Certificate Pinning issues with AFNetworking" property=og:title><meta content=website property=og:type><meta content=https://blog.yageek.net/afnetworking-certificate-pinning-issues/ property=og:url><meta content="The personal website of Yannick Heinrich" property=og:description><link as=font crossorigin href=https://blog.yageek.net/assets/fonts/FiraCode-Regular.woff2 rel=preload type=font/woff2><link as=font crossorigin href=https://blog.yageek.net/assets/fonts/FiraCode-Bold.woff2 rel=preload type=font/woff2><link href="https://blog.yageek.net/style.css?h=97e262212a0704163528" rel=stylesheet><link href="https://blog.yageek.net/color/green.css?h=c685075d8d57bb1e0d87" rel=stylesheet><link href=https://blog.yageek.net/atom.xml rel=alternate title=RSS type=application/atom+xml><body><div class="container full"><header class=header><div class=header__inner><div class=header__logo><a href=/> <div class=logo>yageek</div> </a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href="
+    
+        https://blog.yageek.net/about
+    
+">about</a><li><a href="
+    
+        https://blog.yageek.net/projects
+    
+">projects</a><li><a href="
+    
+        https://speakerdeck.com/yageek
+    
+">speakerdeck</a><li><a href="
+    
+        https://github.com/yageek
+    
+">github</a><li><a href="
+    
+        https://www.linkedin.com/in/yageek/
+    
+">linkedin</a><li><a href="
+    
+        https://www.strava.com/athletes/30110076
+    
+">strava</a></ul><ul class="menu__inner menu__inner--mobile"><li><a href="
+    
+        https://blog.yageek.net/about
+    
+">about</a><li><a href="
+    
+        https://blog.yageek.net/projects
+    
+">projects</a><li><a href="
+    
+        https://speakerdeck.com/yageek
+    
+">speakerdeck</a><li><a href="
+    
+        https://github.com/yageek
+    
+">github</a><li><a href="
+    
+        https://www.linkedin.com/in/yageek/
+    
+">linkedin</a><li><a href="
+    
+        https://www.strava.com/athletes/30110076
+    
+">strava</a></ul></nav></header><div class=content><article class=post><header><h1 class=post-title><a href=https://blog.yageek.net/afnetworking-certificate-pinning-issues/>Certificate Pinning issues with AFNetworking</a></h1><div class=post-meta><span class=post-date>2015.04.25 </span><span class=post-author></span> :: {<a href=https://blog.yageek.net/categories/security/>security</a>, <a href=https://blog.yageek.net/categories/apple/>apple</a>} :: #<a href=https://blog.yageek.net/tags/ios/>ios</a> #<a href=https://blog.yageek.net/tags/certificates/>certificates</a> #<a href=https://blog.yageek.net/tags/http/>http</a> #<a href=https://blog.yageek.net/tags/pinning/>pinning</a></div></header><p>The others day at work, we were confronted to a serious bug on the iOS app of a customer. Due to some security issues, we used https and a certificate key pinning method to avoid man in the middle attack.<p>To not reinvent the wheel, we use AFNetworking as our main network stack. This wonderfull API (thanks <a href=https://twitter.com/mattt rel=external>@mattt</a>), we can use three different certificate pinning strategies with no effort.<p>During the development phase, the pinning was working really good out of the box and we were very confident for the production :)<p>Sadly, after releasing the app into production, we noticed a strange issue with the pinning process.<p>The delegate method <code>connection:willSendRequestForAuthenticationChallenge:</code> from the <code>AFURLConnectionOperation</code> was not called everytime, even if the credential storage was not used...<p>My colleague fell on this <a href=https://github.com/AFNetworking/AFNetworking/issues/991 rel=external>issue</a> on Github that refers to an <a href=https://developer.apple.com/library/ios/qa/qa1727/_index.html rel=external>Apple Technical Q&A</a>. We discover the existence of a low level cache regarding the TLS connection.<p>After reading that carefully, the problem was obvious.<p>We use AFNetworking to connect to our API. We also use an analytics tool that does not use AFNetworking and does not implement any certificate pinning strategy.<p>During the development phase, we use a stubbed server that fakes the data of the client. In this environment, both URLS have a different hostname. But in production, both URLs have the same hostname, only the paths differ.<p>When the analytics tool speaks to the endpoint <strong>api.endpoint.com/analytics</strong>, if the certificate is valid, it accepts the certificate but does not "pin" it. This answer will be cached for 10 minutes for any request reaching the <strong>api.endpoint.com</strong> hostname.<p>Then when AFNetworking will speak to <strong>api.endpoint.com/api</strong>, <code>CFNetwork</code> will use the previous cached response and will not call the <code>connection:willSendRequestForAuthenticationChallenge</code> and the certificate will not be pinned :(<p>To fix it, as preconised in the technical Q&A, we changed the analytics endpoint to prevent the use of the cache.<p><strong>Morality</strong>: AFNetworking rocks. But are you only using the network through this library ? If not, check that some other component will not compromise your certificate pinning strategy.</article></div><div class=pagination><div class=pagination__buttons></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2026 <a href=https://github.com/ejmg/zerm>zerm</a> :: Powered by <a href=https://www.getzola.org/>Zola</a></span><span>:: Theme made by <a href=https://github.com/ejmg>ejmg</a></span></div><script src=https://blog.yageek.net/assets/js/main.js></script></div></footer></div>

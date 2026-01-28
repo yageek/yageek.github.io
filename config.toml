@@ -88,7 +88,7 @@ main_menu = [
               {url="https://speakerdeck.com/yageek", name="speakerdeck", external=true},
               {url="https://github.com/yageek", name="github", external=true},
               {url="https://www.linkedin.com/in/yageek/", name="linkedin", external=true},
-              {url="https://strava.com/yageek", name="strava", external=true},
+              {url="https://www.strava.com/athletes/30110076", name="strava", external=true},
 ]
 
 # Displayed as title of drop-down menu when size of main_menu > show_menu_items.

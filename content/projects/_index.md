@@ -1,17 +1,17 @@
 +++
 sort_by = "date"
 paginate_by = 5
-in_search_index = true
-template = "index.html"
+template = "section.html"
 +++
 
 ### Software
 
+*   Garmin Analog Watchface [ConnectIQ](https://apps.garmin.com/fr-FR/apps/f29ccda7-bb51-48ab-accd-cef5d0ea14c6)
 *   Mac OS X spoiler downloader tool for geocaching.com: [github](https://github.com/yageek/iSpoiler)
 *   Lambert->WGS84 coordinates conversion libraries: [C](https://github.com/yageek/lambert), 
 [C#](https://github.com/yageek/lambert-cs), [Objective-C](https://github.com/yageek/lambert), [Python](https://github.com/yageek/lambert-python), [Swift](https://github.com/yageek/LambertSwift), 
 [Go](https://github.com/yageek/lambertgo), [Rust](https://github.com/yageek/lambert-rust), [Dart](https://github.com/yageek/lambert-dart), [Ruby](https://github.com/yageek/lambert-ruby), 
-[Java](https://github.com/yageek/lambert-java), [NodeJS](https://github.com/yageek/lambertjs)
+[Java](https://github.com/yageek/lambert-java), [NodeJS](https://github.com/yageek/lambertjs), [Zig](https://github.com/yageek/lambert-zig)
 *  TPG libraries for accessing the geneva public transport API: [Swift](https://github.com/yageek/TPGSwift) [Go](https://github.com/yageek/tpggo)
 *  Technical Analysis swift library wrapping the [tulip](https://tulipindicators.org/) C library: [github](https://github.com/yageek/tulipindicators-swift)
 *  Port of [corskcrew](https://web.archive.org/web/20170510154150/http://agroman.net/corkscrew/) in Rust: [corkscrew-rs](https://github.com/yageek/corkscrew-rs)
@@ -24,6 +24,7 @@ template = "index.html"
 ### Power electronics:
 
 *   Design one flyback power system (PDF): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQNWU3OTI4NDYtYTcwYS00YTNhLWFlNzYtNDhlY2U1NWIxOTFh&hl=fr) - [Calc spreadsheet](https://docs.google.com/leaf?
+
 ### VHDL/VHDL-AMS :
 
 *   SigmaDelta converter in VHDL-AMS (FR): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQMjY3Y2YxODUtNzJjMy00ZTg2LTk0ZDYtMDNiMDMwZTcyNjJj&hl=fr)

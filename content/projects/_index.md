@@ -23,7 +23,7 @@ template = "section.html"
 
 ### Power electronics:
 
-*   Design one flyback power system (PDF): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQNWU3OTI4NDYtYTcwYS00YTNhLWFlNzYtNDhlY2U1NWIxOTFh&hl=fr) - [Calc spreadsheet](https://docs.google.com/leaf?
+*   Design one flyback power system (PDF): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQNWU3OTI4NDYtYTcwYS00YTNhLWFlNzYtNDhlY2U1NWIxOTFh&hl=fr) - [Calc spreadsheet](https://drive.google.com/file/d/0B6tbPeG2hrjQNGYyMTc0NDItOTdmZC00ZWE2LWJkZTktYmNkODdhNTkxYTU4/view?usp=sharing&resourcekey=0-dRAOU-nZFX6tdEc389PBug)
 
 ### VHDL/VHDL-AMS :
 

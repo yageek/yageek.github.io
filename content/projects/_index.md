@@ -9,7 +9,7 @@ template = "section.html"
 *   Garmin Analog Watchface [ConnectIQ](https://apps.garmin.com/fr-FR/apps/f29ccda7-bb51-48ab-accd-cef5d0ea14c6)
 *   Mac OS X spoiler downloader tool for geocaching.com: [github](https://github.com/yageek/iSpoiler)
 *   Lambert->WGS84 coordinates conversion libraries: [C](https://github.com/yageek/lambert), 
-[C#](https://github.com/yageek/lambert-cs), [Objective-C](https://github.com/yageek/lambert), [Python](https://github.com/yageek/lambert-python), [Swift](https://github.com/yageek/LambertSwift), 
+[C#](https://github.com/yageek/lambert-cs), [Objective-C](https://github.com/yageek/lambert-objc), [Python](https://github.com/yageek/lambert-python), [Swift](https://github.com/yageek/LambertSwift), 
 [Go](https://github.com/yageek/lambertgo), [Rust](https://github.com/yageek/lambert-rust), [Dart](https://github.com/yageek/lambert-dart), [Ruby](https://github.com/yageek/lambert-ruby), 
 [Java](https://github.com/yageek/lambert-java), [NodeJS](https://github.com/yageek/lambertjs), [Zig](https://github.com/yageek/lambert-zig)
 *  TPG libraries for accessing the geneva public transport API: [Swift](https://github.com/yageek/TPGSwift) [Go](https://github.com/yageek/tpggo)

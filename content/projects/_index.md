@@ -4,9 +4,11 @@ paginate_by = 5
 template = "section.html"
 +++
 
-### Software
+### 3D Printing
+* Cardputer ADV case: [MakerWorld](https://makerworld.com/fr/models/2248402-m5stack-adv-cardputer-case-with-m5stack-logo#profileId-2448238), [Printables](https://www.printables.com/model/1556940-m5stack-adv-cardputer-case-with-m5stack-logo)
 
-*   Garmin Analog Watchface [ConnectIQ](https://apps.garmin.com/fr-FR/apps/f29ccda7-bb51-48ab-accd-cef5d0ea14c6)
+### Software
+*   Garmin Analog Watchface: [ConnectIQ](https://apps.garmin.com/fr-FR/apps/f29ccda7-bb51-48ab-accd-cef5d0ea14c6)
 *   Mac OS X spoiler downloader tool for geocaching.com: [github](https://github.com/yageek/iSpoiler)
 *   Lambert->WGS84 coordinates conversion libraries: [C](https://github.com/yageek/lambert), 
 [C#](https://github.com/yageek/lambert-cs), [Objective-C](https://github.com/yageek/lambert-objc), [Python](https://github.com/yageek/lambert-python), [Swift](https://github.com/yageek/LambertSwift), 
@@ -18,7 +20,6 @@ template = "section.html"
 *  Eurométropole Parking API client: [Swift](https://github.com/yageek/StrasbourgParkAPI) [Rust](https://github.com/yageek/strasbourgpark-rs)
 
 ### Analog electronics :
-
 *   Switched capacitor (FR): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQYThlMDZmNzctNDQ1OS00ZDhmLWE5NTMtZmQ1YjU5NDkzMzM3&hl=fr)
 
 ### Power electronics:
@@ -26,7 +27,6 @@ template = "section.html"
 *   Design one flyback power system (PDF): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQNWU3OTI4NDYtYTcwYS00YTNhLWFlNzYtNDhlY2U1NWIxOTFh&hl=fr) - [Calc spreadsheet](https://drive.google.com/file/d/0B6tbPeG2hrjQNGYyMTc0NDItOTdmZC00ZWE2LWJkZTktYmNkODdhNTkxYTU4/view?usp=sharing&resourcekey=0-dRAOU-nZFX6tdEc389PBug)
 
 ### VHDL/VHDL-AMS :
-
 *   SigmaDelta converter in VHDL-AMS (FR): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQMjY3Y2YxODUtNzJjMy00ZTg2LTk0ZDYtMDNiMDMwZTcyNjJj&hl=fr)
 
 ### Others:

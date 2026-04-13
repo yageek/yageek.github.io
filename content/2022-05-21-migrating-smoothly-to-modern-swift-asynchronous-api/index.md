@@ -15,7 +15,6 @@ In this post, we will the basics about those API and how you could use them to p
 Objective-C, Swift, Combine and `async` swift.
 
 ## Basics
-
 Is see `NSOperation` as more powerfull closures: it encapsulates a piece of work whose execution is deferred for later with the 
 advantage of beeing an object instance. Using dependency injection and proper abstraction, you can constitute a set of 
 reusable components all accross your app.
@@ -36,7 +35,6 @@ Given a sprcific range, increment one a variable from the lower to the upper bou
 After each increment, the code should sleep for some specified amount of time.
 
 #### Create one `NSOperation`/`Operation` subclass
-
 We will create a basic class with the different element we need.
 ```objective-c
 #pragma mark - Interface
@@ -83,7 +81,6 @@ final class WaitCounterOperation: Operation {
 ```
 
 #### Encapsulate work to be done
-
 The documentation of this class [^2] will directly speaks about asynchronous and synchronous operation. 
 Let's put this question apart for now and simply talk about encapsulating the work to be done.
 
@@ -115,7 +112,6 @@ override func main() {
 ```
 
 ### Starts the work on a queue.
-
 You can schedule the work "manually" by keeping references to the different `NSOperation` subclasses' instances and call the `main` method your self but I have to admit I never did that.
 
 The easiest way to schedule one operation is to attach it to one `NSOperationQueue` instance.
@@ -144,7 +140,6 @@ WaitCounterOperation *op = [[WaitCounterOperation alloc] initWithMaxValue:10
 ```
 
 In swift: 
-
 ```swift
 let queue = OperationQueue()
 queue.qualityOfService = .utility
@@ -156,7 +151,6 @@ queue.addOperation(op)
 ```
 
 In both case you should see the following inside the terminal a new line every seconds:
-
 ```shell
 Starting WaitCounterOperation instance: <QueueSample.WaitCounterOperation: 0x1497050e0>
 Counter Value: 0
@@ -174,7 +168,6 @@ Counter Value: 9
 It seems to work as expected.
 
 ### Splitting the work
-
 Let's try to split the work: let's count on a larger range with two operations. The only requirement, we want to count on order.
 
 For now we have one queue with the a value of `maxConcurrentOperationCount` of `1`. As only one operation can run at the same time,
@@ -232,7 +225,6 @@ Counter Value: 19
 Works perfectly
 
 ### Create dependencies between operations
-
 Imagine now that we would like to start with one operation of counting from 0 to 9.
 Once that's done, we would like to run two counter operations simulatneously.
 

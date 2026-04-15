@@ -27,7 +27,7 @@ template = "section.html"
 *   Design one flyback power system (PDF): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQNWU3OTI4NDYtYTcwYS00YTNhLWFlNzYtNDhlY2U1NWIxOTFh&hl=fr) - [Calc spreadsheet](https://drive.google.com/file/d/0B6tbPeG2hrjQNGYyMTc0NDItOTdmZC00ZWE2LWJkZTktYmNkODdhNTkxYTU4/view?usp=sharing&resourcekey=0-dRAOU-nZFX6tdEc389PBug)
 
 ### VHDL/VHDL-AMS :
-*   SigmaDelta converter in VHDL-AMS (FR): [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQMjY3Y2YxODUtNzJjMy00ZTg2LTk0ZDYtMDNiMDMwZTcyNjJj&hl=fr)
+*   SigmaDelta converter in VHDL-AMS (FR): [PDF](https://drive.google.com/file/d/0B6tbPeG2hrjQMjY3Y2YxODUtNzJjMy00ZTg2LTk0ZDYtMDNiMDMwZTcyNjJj/view?usp=sharing&resourcekey=0-RYMr_ZEvI-LSmZLaxWsBhQ)
 
 ### Others:
 *   Genetic Algorithm: [PDF](https://docs.google.com/viewer?a=v&pid=explorer&chrome=true&srcid=0B6tbPeG2hrjQZDMwNWI5OTItN2FiNi00YWRiLTk0NjQtZjNkNjAyNGYwZjI5&hl=fr) - [Slides](https://docs.google.com/leaf?id=0B6tbPeG2hrjQMDlkMTgxMjItY2I2YS00YjFjLWJkNTQtMGRmYzY1ZGQ2NWU1&hl=fr)

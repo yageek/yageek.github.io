@@ -12,18 +12,16 @@ I found a nice 3D printed case on [printables from hippazoid](https://www.printa
 
 ![The cardputer v1.1 device](cardputer1_1_box.jpg)
 
-Later on, I ordered the Cardputer ADV to take advantages of the new pin-out system for board. I printed a second case without realising that the case for the ADV version will not fit inside the 1.1 case.
+Later on, I ordered the Cardputer ADV to take advantages of the new pin-out system. I printed a second case without realising that the case was not compatible with the ADV version.
 
 ![Both cardputer v1.1 and ADV devices](cardputers.jpg)
 
-That was the opportunity to test [FreeCAD](https://www.freecad.org) to adapt the for the ADV version.
+That was the opportunity to test [FreeCAD](https://www.freecad.org) and adapt the model to fit the new version.
 
-I redesign both lid and bottom part of the original case from scratch and take measurements from the original model using the measurement tool from [BambuStudio](https://bambulab.com/en/download/studio).
+I recreated the lid and the bottom part frop the measurements of the original model using the measurement tool from [BambuStudio](https://bambulab.com/en/download/studio).
 To adapt the bottom part, I used measurements from this [ADV stand model](https://www.printables.com/model/1414444-m5stack-cardputer-adv-stand) from printables.com
 
 ![Designing the case on FreeCAD](freecad.png)
-
-I am glad with the result. Some fillets on bottom and to faces have been forgotten 😅
 
 ![Pictures from the case](case.jpg)
 ![Pictures from the case with the ADV device](front.jpg)

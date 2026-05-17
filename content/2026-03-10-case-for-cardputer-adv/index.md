@@ -18,7 +18,7 @@ Later on, I ordered the Cardputer ADV to take advantages of the new pin-out syst
 
 That was the opportunity to test [FreeCAD](https://www.freecad.org) and adapt the model to fit the new version.
 
-I recreated the lid and the bottom part frop the measurements of the original model using the measurement tool from [BambuStudio](https://bambulab.com/en/download/studio).
+I recreated the lid and the bottom part from the measurements of the original model using the measurement tool from [BambuStudio](https://bambulab.com/en/download/studio).
 To adapt the bottom part, I used measurements from this [ADV stand model](https://www.printables.com/model/1414444-m5stack-cardputer-adv-stand) from printables.com
 
 ![Designing the case on FreeCAD](freecad.png)
